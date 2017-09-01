@@ -36,6 +36,7 @@ executable lsystem
   hs-source-dirs: executable
   build-depends: base,
                  lsystem,
+                 split,
                  diagrams-svg,
                  diagrams-lib
   default-extensions: FlexibleContexts,
