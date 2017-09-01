@@ -4,7 +4,7 @@ module Lsystem.Turtle
   , TurtleCode
   , parse
   , nextTurtle
-  , nTurtles
+  , turtlesForever
 ) where
 
 import Lsystem.Generator
@@ -26,9 +26,8 @@ data Turtle = Turtle {
 nextTurtle :: Turtle -> Turtle
 nextTurtle t = t { instr = next (rules t) (instr t) }
 
-nTurtles :: Turtle -> Int -> [Turtle]
-nTurtles _ 0 = []
-nTurtles t i = [t] ++ nTurtles (nextTurtle t) (i-1) 
+turtlesForever :: Turtle -> [Turtle]
+turtlesForever t = [t] ++ turtlesForever (nextTurtle t)
 
 data Visibility = Visible | Invisible deriving(Show, Eq, Ord)
 

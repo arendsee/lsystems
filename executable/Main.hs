@@ -10,10 +10,10 @@ import Diagrams.Backend.SVG.CmdLine
 import Lsystem
 
 exampleTurtle :: Turtle
-exampleTurtle = Turtle {instr="FF-FF-FF-FF" , rules=[('F', "F-F-F")] , angle=90}
+exampleTurtle = Turtle {instr="-F" , rules=[('F', "F+F-F-F+F")] , angle=90}
 
 lines' :: Maybe (Trail' Line V2 Double)
-lines' = fromOffsets <$> parse exampleTurtle
+lines' = fromOffsets <$> parse (turtlesForever exampleTurtle !! 3)
 
 fig' :: Maybe (Diagram B)
 fig' = strokeLine <$> lines'
