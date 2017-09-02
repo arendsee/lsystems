@@ -12,7 +12,7 @@ module Lsystem.Syntax
 ) where
 
 data System = System {
-      systemDepth :: Int
+      systemDepth :: Integer
     , systemAngle :: Double
     , systemTable :: [(String, String)]
     , systemParam :: TurtleParam
@@ -20,6 +20,15 @@ data System = System {
     , systemRules :: [Production]
   }
   deriving(Show, Eq, Ord)
+
+data LeftElement
+  = LeftElementFunction String [String]
+  | LeftElementVariable String 
+  deriving(Show, Eq, Ord)
+
+data LHS
+  = LHSContextFree LeftElement
+  | LHSContextDependent (Maybe LeftElement) LeftElement (Maybe LeftElement)
 
 -- Currently there is only one parameter, but this may eventually include
 -- things like rendering details, output filenames and the like. `ignore` is
@@ -31,10 +40,9 @@ data TurtleParam = TurtleParam {
   deriving(Show, Eq, Ord)
 
 data Production = Production {
-      productionName    :: String
-    , productionContext :: (String, String)
+      productionContext :: (String, String)
     , productionChance  :: Double
-    , productionOn      :: String
+    , productionFrom    :: String
     -- The replacement string. I leave this as string for now, it will need to
     -- undergo further parsing later
     , productionTo      :: String } deriving(Show, Eq, Ord)
