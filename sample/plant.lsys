@@ -1,0 +1,20 @@
+n=5, d=18
+
+w : plant
+
+p_1 : plant -> internode + [ plant + flower ] -- //
+               [ -- leaf ] internode [ ++ leaf ] -
+               [ plant flower ] ++ plant flower
+
+p_2 : internode -> F seg [//&& leaf ] [//^^ leaf ] F seg
+
+p_3 : seg -> seg F seg
+
+p_4 : leaf -> [' { +f-ff-f+ | +f-ff-f } ]
+
+p_5 : flower -> [ & & & pedicel ' / wedge //// wedge ////
+               wedge //// wedge //// wedge ]
+
+p_6 : pedicel -> FF
+
+p_7 : wedge -> ['^F] [ { &&&&-f+f | -f+f } ]
