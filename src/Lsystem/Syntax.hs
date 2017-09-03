@@ -21,14 +21,37 @@ data System = System {
   }
   deriving(Show, Eq, Ord)
 
+data ArithmeticToken
+  = ArithmeticTokenCon Double
+  | ArithmeticTokenVar String
+  | ArithmeticTokenAdd
+  | ArithmeticTokenSub
+  | ArithmeticTokenExp
+  | ArithmeticTokenDiv
+  | ArithmeticTokenMul
+  | ArithmeticTokenRParen
+  | ArithmeticTokenRParen
+
 data LeftElement
   = LeftElementFunction String [String]
   | LeftElementVariable String 
   deriving(Show, Eq, Ord)
 
+data RightElement
+  = RightElementFunction String [[ArithmeticToken]]
+  | RightElementVariable String 
+  deriving(Show, Eq, Ord)
+
 data LHS
   = LHSContextFree LeftElement
   | LHSContextDependent (Maybe LeftElement) LeftElement (Maybe LeftElement)
+
+data RHS
+  = RHSApicalCmd 
+  | RHSMetaCmd
+  | RHSVariable
+  | RHSBranch
+  | RHSNest
 
 -- Currently there is only one parameter, but this may eventually include
 -- things like rendering details, output filenames and the like. `ignore` is
@@ -40,12 +63,17 @@ data TurtleParam = TurtleParam {
   deriving(Show, Eq, Ord)
 
 data Production = Production {
-      productionContext :: (String, String)
-    , productionChance  :: Double
-    , productionFrom    :: String
-    -- The replacement string. I leave this as string for now, it will need to
-    -- undergo further parsing later
-    , productionTo      :: String } deriving(Show, Eq, Ord)
+      productionChance  :: Double
+    , productionFrom    :: LHS
+    , productionTo      :: String
+  } deriving(Show, Eq, Ord)
+
+data ParameterizedCmd
+  = ParameterizedCmdDrawForward Double -- F(x) where x > 0
+  | ParameterizedCmdMoveForward Double -- f(x) where x > 0
+  | ParameterizedCmdRotateXY    Double -- +(x)
+  | ParameterizedCmdRotateXZ    Double -- &(x)
+  | ParameterizedCmdRotateYZ    Double -- /(x)
 
 -- Legal on LHS or RHS of production
 data ApicalCmd

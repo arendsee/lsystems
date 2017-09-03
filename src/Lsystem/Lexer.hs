@@ -103,6 +103,8 @@ rule' = do
 rhsPattern' :: PS.Parser [Char]
 rhsPattern' = manyTill C.anyChar (C.char ';')
 
+
+
 lhsPattern' :: PS.Parser [Char]
 lhsPattern' = manyTill C.anyChar (try (string "->"))
 
