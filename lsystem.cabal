@@ -16,10 +16,7 @@ cabal-version:       >=1.10
 library
   exposed-modules:    Lsystem,
                       Lsystem.Generator,
-                      Lsystem.Turtle,
-                      Lsystem.Render,
-                      Lsystem.Syntax,
-                      Lsystem.Lexer
+                      Lsystem.Turtle
 
   default-extensions: FlexibleContexts,
                       NoMonomorphismRestriction,
