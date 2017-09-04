@@ -29,23 +29,48 @@ render' = renderSystem (mkStdGen 42) (400,400)
 
 main :: IO ()
 main = do
-  render' "s1.svg" $ transDolSys 3 90 "F-F-F-F" "F-F+F-F+F"                      
-  render' "s2.svg" $ transDolSys 2 90 "F-F-F-F" "F+FF-FF-F-F+F+FF-F-F+F+FF+FF-F" 
-  render' "s3.svg" $ transDolSys 3 90 "F-F-F-F" "FF-F--F-F"                      
-  render' "s4.svg" $ transDolSys 3 90 "F-F-F-F" "F-F-F+F+F-F-F+F+F"              
-  render' "s5.svg" $ transDolSys 2 90 "F-F-F-F" "FF+F+F-FFF-FFF-FFF-F+F+FF"      
-  render' "s6.svg" $ transDolSys 3 90 "F-F-F-F" "F+F+F-F-F+F-F-F+F-F-F+F+F"      
-  render' "s7.svg" $ transDolSys 4 90 "F-F-F-F" "FF-F+F+F-F"                     
-  render' "s8.svg" $ transDolSys 4 90 "F-F-F-F" "FF-F-F+F+F-F+F+F-F+F+F-F-FF"    
-  render' "s9.svg" $ transDolSys 5 90 "F"       "F+F-F-F+F"                      
+  render' "d1.svg" $ transDolSys 3 90 "F-F-F-F" "F-F+F-F+F"
+  render' "d2.svg" $ transDolSys 2 90 "F-F-F-F" "F+FF-FF-F-F+F+FF-F-F+F+FF+FF-F"
+  render' "d3.svg" $ transDolSys 3 90 "F-F-F-F" "FF-F--F-F"
+  render' "d4.svg" $ transDolSys 3 90 "F-F-F-F" "F-F-F+F+F-F-F+F+F"
+  render' "d5.svg" $ transDolSys 2 90 "F-F-F-F" "FF+F+F-FFF-FFF-FFF-F+F+FF"
+  render' "d6.svg" $ transDolSys 3 90 "F-F-F-F" "F+F+F-F-F+F-F-F+F-F-F+F+F"
+  render' "d7.svg" $ transDolSys 4 90 "F-F-F-F" "FF-F+F+F-F"
+  render' "d8.svg" $ transDolSys 4 90 "F-F-F-F" "FF-F-F+F+F-F+F+F-F+F+F-F-FF"
+  render' "d9.svg" $ transDolSys 5 90 "F"       "F+F-F-F+F"
+```
+
+![d1](images/d1.png)
+![d2](images/d2.png)
+![d3](images/d3.png)
+![d4](images/d4.png)
+![d5](images/d5.png)
+![d6](images/d6.png)
+![d7](images/d7.png)
+![d8](images/d8.png)
+![d9](images/d9.png)
+
+
+### Stochastic systems
+
+L-systems can be made stochastic be adding probabilistic rules. A probabilistic
+rule is a set of rules associated with probabilities, where the probabilities
+must some to a number less than or equal to 1 (with the implicit default rule
+of N -> N making up the difference).
+
+
+``` haskell
+import Lsystem
+import System.Random
+
+render' :: String -> System -> IO ()
+render' = renderSystem (mkStdGen 42) (400,400)
+
+s1 = transSolSys 12 45 "F" [(0.4, "FF"), (0.5, "-F"), (0.1, "FF-FF-FF-FF")]
+
+main :: IO ()
+main = do
+  render' "s1.svg" s1
 ```
 
 ![s1](images/s1.png)
-![s2](images/s2.png)
-![s3](images/s3.png)
-![s4](images/s4.png)
-![s5](images/s5.png)
-![s6](images/s6.png)
-![s7](images/s7.png)
-![s8](images/s8.png)
-![s9](images/s9.png)
