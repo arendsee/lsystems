@@ -26,15 +26,15 @@ render' = renderSystem (400,400)
 
 main :: IO ()
 main = do
-  render' "s1.svg" $ transDolSys "F-F-F-F" "F-F+F-F+F"                      3
-  render' "s2.svg" $ transDolSys "F-F-F-F" "F+FF-FF-F-F+F+FF-F-F+F+FF+FF-F" 2
-  render' "s3.svg" $ transDolSys "F-F-F-F" "FF-F--F-F"                      3
-  render' "s4.svg" $ transDolSys "F-F-F-F" "F-F-F+F+F-F-F+F+F"              3
-  render' "s5.svg" $ transDolSys "F-F-F-F" "FF+F+F-FFF-FFF-FFF-F+F+FF"      2
-  render' "s6.svg" $ transDolSys "F-F-F-F" "F+F+F-F-F+F-F-F+F-F-F+F+F"      3
-  render' "s7.svg" $ transDolSys "F-F-F-F" "FF-F+F+F-F"                     4
-  render' "s8.svg" $ transDolSys "F-F-F-F" "FF-F-F+F+F-F+F+F-F+F+F-F-FF"    4
-  render' "s9.svg" $ transDolSys "F"       "F+F-F-F+F"                      5
+  render' "s1.svg" $ transDolSys 3 90 "F-F-F-F" "F-F+F-F+F"                      
+  render' "s2.svg" $ transDolSys 2 90 "F-F-F-F" "F+FF-FF-F-F+F+FF-F-F+F+FF+FF-F" 
+  render' "s3.svg" $ transDolSys 3 90 "F-F-F-F" "FF-F--F-F"                      
+  render' "s4.svg" $ transDolSys 3 90 "F-F-F-F" "F-F-F+F+F-F-F+F+F"              
+  render' "s5.svg" $ transDolSys 2 90 "F-F-F-F" "FF+F+F-FFF-FFF-FFF-F+F+FF"      
+  render' "s6.svg" $ transDolSys 3 90 "F-F-F-F" "F+F+F-F-F+F-F-F+F-F-F+F+F"      
+  render' "s7.svg" $ transDolSys 4 90 "F-F-F-F" "FF-F+F+F-F"                     
+  render' "s8.svg" $ transDolSys 4 90 "F-F-F-F" "FF-F-F+F+F-F+F+F-F+F+F-F-FF"    
+  render' "s9.svg" $ transDolSys 5 90 "F"       "F+F-F-F+F"                      
 ```
 
 ![s1](images/s1.png)

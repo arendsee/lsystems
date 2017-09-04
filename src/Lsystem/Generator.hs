@@ -47,29 +47,23 @@ walk rs n = [n] ++ walk' rs n where
   walk' rs n = [next'] ++ walk' rs next' where
     next' = step rs n
 
-maybeTransDol :: String -> Maybe [Node]
-maybeTransDol = sequence . map translate'
-  where
-    translate' :: Char -> Maybe Node
-    translate' 'F' = Just $ NodeDraw [] 1
-    translate' '+' = Just $ NodeRotate [] 270 0 0
-    translate' '-' = Just $ NodeRotate [] 90  0 0
-    translate' _   = Nothing
+translate' :: Double -> Char -> Maybe Node
+translate' _ 'F' = Just $ NodeDraw [] 1
+translate' a '+' = Just $ NodeRotate [] (-1 * a) 0 0 -- '+' represents a clockwise turn, which is of negative degree
+translate' a '-' = Just $ NodeRotate [] (     a) 0 0
+translate' _  _  = Nothing
 
-transDol :: String -> [Node]
-transDol = catMaybes . map translate'
-  where
-    translate' :: Char -> Maybe Node
-    translate' 'F' = Just $ NodeDraw [] 1
-    translate' '+' = Just $ NodeRotate [] 270 0 0
-    translate' '-' = Just $ NodeRotate [] 90  0 0
-    translate'  _  = Nothing
+maybeTransDol :: Double -> String -> Maybe [Node]
+maybeTransDol a s = sequence . map (translate' a) $ s
 
-transDolSys :: String -> String -> Int -> System
-transDolSys b r i = System {
-      systemBasis = transDol b
-    , systemRules = [fromF (transDol r)]
-    , systemSteps = i
+transDol :: Double -> String -> [Node]
+transDol a s = catMaybes . map (translate' a) $ s
+
+transDolSys :: Int -> Double -> String -> String -> System
+transDolSys n angle basis replacement = System {
+      systemBasis = transDol angle basis
+    , systemRules = [fromF (transDol angle replacement)]
+    , systemSteps = n
   } where
 
     isF :: Node -> Bool
