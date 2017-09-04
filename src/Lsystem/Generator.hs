@@ -2,17 +2,14 @@ module Lsystem.Generator
 (
     step
   , walk
-  , fromF
+  , transDol
+  , maybeTransDol
+  , transDolSys
   , ignoreContext
   , unconditional
-  , is90
-  , is270
-  , o90
-  , o270
-  , isF
-  , oF
-  , oSquare
 ) where
+
+import Data.Maybe
 
 import Lsystem.Grammar
 
@@ -50,49 +47,46 @@ walk rs n = [n] ++ walk' rs n where
   walk' rs n = [next'] ++ walk' rs next' where
     next' = step rs n
 
+maybeTransDol :: String -> Maybe [Node]
+maybeTransDol = sequence . map translate'
+  where
+    translate' :: Char -> Maybe Node
+    translate' 'F' = Just $ NodeDraw [] 1
+    translate' '+' = Just $ NodeRotate [] 270 0 0
+    translate' '-' = Just $ NodeRotate [] 90  0 0
+    translate' _   = Nothing
+
+transDol :: String -> [Node]
+transDol = catMaybes . map translate'
+  where
+    translate' :: Char -> Maybe Node
+    translate' 'F' = Just $ NodeDraw [] 1
+    translate' '+' = Just $ NodeRotate [] 270 0 0
+    translate' '-' = Just $ NodeRotate [] 90  0 0
+    translate'  _  = Nothing
+
+transDolSys :: String -> String -> Int -> System
+transDolSys b r i = System {
+      systemBasis = transDol b
+    , systemRules = [fromF (transDol r)]
+    , systemSteps = i
+  } where
+
+    isF :: Node -> Bool
+    isF (NodeDraw _ _) = True
+    isF _ = False
+
+    fromF :: [Node] -> Rule
+    fromF repl =
+      DeterministicRule {
+          ruleContext     = ignoreContext
+        , ruleCondition   = unconditional
+        , ruleMatch       = isF
+        , ruleReplacement = repl
+      }
+
 ignoreContext :: LeftContext -> RightContext -> Bool
 ignoreContext _ _ = True
 
 unconditional :: LeftContext -> RightContext -> Node -> Bool
 unconditional _ _ _ = True
-
-isF :: Node -> Bool
-isF (NodeDraw _ _) = True
-isF _ = False
-
-is90 :: Node -> Bool
-is90 (NodeRotate _ 90 0 0) = True
-is90 _ = True
-
-is270 :: Node -> Bool
-is270 (NodeRotate _ 270 0 0) = True
-is270 _ = True
-
-fromF :: [Node] -> Rule
-fromF repl =
-  DeterministicRule {
-      ruleContext     = ignoreContext
-    , ruleCondition   = unconditional
-    , ruleMatch       = isF
-    , ruleReplacement = repl
-  }
-
-oF :: Node -- F
-oF = NodeDraw [] 1
-
-o90 :: Node -- -
-o90 = NodeRotate [] 90  0 0
-
-o270 :: Node  -- +
-o270 = NodeRotate [] 270 0 0
-
-oSquare :: [Node] -- F-F-F-F
-oSquare = [
-      oF     -- F
-    , o270   -- -
-    , oF     -- F
-    , o270   -- -
-    , oF     -- F
-    , o270   -- -
-    , oF     -- F
-  ]
