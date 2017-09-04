@@ -17,7 +17,8 @@ library
   exposed-modules:    Lsystem,
                       Lsystem.Generator,
                       Lsystem.Grammar,
-                      Lsystem.Render
+                      Lsystem.Render,
+                      Lsystem.Sugar
 
   default-extensions: FlexibleContexts,
                       NoMonomorphismRestriction,
