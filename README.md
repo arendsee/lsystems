@@ -10,6 +10,14 @@ something that can be read by Blender).
 
 ### DOL-systems
 
+The data structures I used to represent the L-systems are very general. They
+allow stochastic, context-sensitive, parametric L-systems (the algorithms and
+graphics for these higher forms aren't implemented yet). But expressing systems in this general format is extremely verbose, so I wrote the special handler `transDolSys`.
+
+As I implement the higher features, I will probably add similar convenience
+functions. Ultimately, I would like to have a full parser for the L-system
+grammar used in ABOP.
+
 ``` haskell
 import Lsystem
 
@@ -29,18 +37,12 @@ main = do
   render' "s9.svg" $ transDolSys "F"       "F+F-F-F+F"                      5
 ```
 
-![n=2 a=90 w=F-F-F-F F->FF+F+F-FFF-FFF-FFF-F+F+FF](images/s1.png)
-
-![n=3 a=90 w=F-F-F-F F->FF-F--F-F](images/s2.png)
-
-![n=3 a=90 w=F-F-F-F F->F+F+F-F-F+F-F-F+F-F-F+F+F](images/s3.png)
-
-![n=3 a=90 w=F-F-F-F F->F-F+F-F+F](images/s4.png)
-
-![n=3 a=90 w=F-F-F-F F->F-F-F+F+F-F-F+F+F](images/s5.png)
-
-![n=4 a=90 w=F-F-F-F F->FF-F+F+F-F](images/s6.png)
-
-![n=4 a=90 w=F-F-F-F F->FF-F-F+F+F-F+F+F-F+F+F-F-FF](images/s7.png)
-
-![n=5 a=90 w=F F->F+F-F-F+F](images/s8.png)
+![s1](images/s1.png)
+![s2](images/s2.png)
+![s3](images/s3.png)
+![s4](images/s4.png)
+![s5](images/s5.png)
+![s6](images/s6.png)
+![s7](images/s7.png)
+![s8](images/s8.png)
+![s9](images/s9.png)
