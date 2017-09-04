@@ -1,0 +1,25 @@
+#define CH 900
+#define CT 0.4
+#define ST 3.9
+#include H
+#ignore f ∼ H
+
+-(90) F(0,0,CH) F(4,1,CH) F(0,0,CH);
+
+F(s,t,c)
+  : t=1 & s>=6
+  -> F(s/3*2,2,c) f(1) F(s/3,1,c);
+
+F(s,t,c)
+  : t=2 & s>=6
+  -> F(s/3,2,c) f(1) F(s/3*2,1,c);
+
+F(h,i,k) < F(s,t,c) > F(o,p,r)
+  : s>ST|c>CT
+  -> F(s+.1,t,c+0.25*(k+r-3*c));
+
+F(h,i,k) < F(s,t,c) > F(o,p,r)
+  : !(s>ST|c>CT)
+  -> F(0,0,CH) ∼ H(1);
+
+H(s) : s<3 -> H(s*1.1);

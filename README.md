@@ -10,21 +10,37 @@ something that can be read by Blender).
 
 ### DOL-systems
 
-The current user interface for entering these patterns is really clunky. I am
-currently writing a parser to read in a file that describes the system.
+``` haskell
+import Lsystem
 
-![n=2 a=90 w=F-F-F-F F->FF+F+F-FFF-FFF-FFF-F+F+FF](images/2_90_F-F-F-F_F+FF-FF-F-F+F+FF-F-F+F+FF+FF-F.png)
+render' :: String -> System -> IO ()
+render' = renderSystem (400,400)
 
-![n=3 a=90 w=F-F-F-F F->FF-F--F-F](images/3_90_F-F-F-F_FF-F--F-F.png)
+main :: IO ()
+main = do
+  render' "s1.svg" $ transDolSys "F-F-F-F" "F-F+F-F+F"                      3
+  render' "S2.svg" $ transDolSys "F-F-F-F" "F+FF-FF-F-F+F+FF-F-F+F+FF+FF-F" 2
+  render' "S3.svg" $ transDolSys "F-F-F-F" "FF-F--F-F"                      3
+  render' "S4.svg" $ transDolSys "F-F-F-F" "F-F-F+F+F-F-F+F+F"              3
+  render' "S5.svg" $ transDolSys "F-F-F-F" "FF+F+F-FFF-FFF-FFF-F+F+FF"      2
+  render' "S6.svg" $ transDolSys "F-F-F-F" "F+F+F-F-F+F-F-F+F-F-F+F+F"      3
+  render' "S7.svg" $ transDolSys "F-F-F-F" "FF-F+F+F-F"                     4
+  render' "S8.svg" $ transDolSys "F-F-F-F" "FF-F-F+F+F-F+F+F-F+F+F-F-FF"    4
+  render' "S9.svg" $ transDolSys "F"       "F+F-F-F+F"                      5
+```
 
-![n=3 a=90 w=F-F-F-F F->F+F+F-F-F+F-F-F+F-F-F+F+F](images/3_90_F-F-F-F_F+F+F-F-F+F-F-F+F-F-F+F+F.png)
+![n=2 a=90 w=F-F-F-F F->FF+F+F-FFF-FFF-FFF-F+F+FF](images/s1.png)
 
-![n=3 a=90 w=F-F-F-F F->F-F+F-F+F](images/3_90_F-F-F-F_F-F+F-F+F.png)
+![n=3 a=90 w=F-F-F-F F->FF-F--F-F](images/s2.png)
 
-![n=3 a=90 w=F-F-F-F F->F-F-F+F+F-F-F+F+F](images/3_90_F-F-F-F_F-F-F+F+F-F-F+F+F.png)
+![n=3 a=90 w=F-F-F-F F->F+F+F-F-F+F-F-F+F-F-F+F+F](images/s3.png)
 
-![n=4 a=90 w=F-F-F-F F->FF-F+F+F-F](images/4_90_F-F-F-F_FF-F+F+F-F.png)
+![n=3 a=90 w=F-F-F-F F->F-F+F-F+F](images/s4.png)
 
-![n=4 a=90 w=F-F-F-F F->FF-F-F+F+F-F+F+F-F+F+F-F-FF](images/4_90_F-F-F-F_FF-F-F+F+F-F+F+F-F+F+F-F-FF.png)
+![n=3 a=90 w=F-F-F-F F->F-F-F+F+F-F-F+F+F](images/s5.png)
 
-![n=5 a=90 w=F F->F+F-F-F+F](images/5_90_F_F+F-F-F+F.png)
+![n=4 a=90 w=F-F-F-F F->FF-F+F+F-F](images/s6.png)
+
+![n=4 a=90 w=F-F-F-F F->FF-F-F+F+F-F+F+F-F+F+F-F-FF](images/s7.png)
+
+![n=5 a=90 w=F F->F+F-F-F+F](images/s8.png)

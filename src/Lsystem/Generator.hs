@@ -1,27 +1,92 @@
 module Lsystem.Generator
 (
-    next
-  , generate
-  , Nested(..)
+    step
+  , walk
+  , transDol
+  , maybeTransDol
+  , transDolSys
+  , ignoreContext
+  , unconditional
 ) where
 
-class Nested f where
-  unnest :: f (f a) -> f a
-  nest :: a -> f a
+import Data.Maybe
 
-instance Nested [] where 
-  unnest = concat
-  nest x = [x] 
+import Lsystem.Grammar
 
-next :: (Nested f, Functor f, Eq a) => [(a, f a)] -> f a -> f a
-next rs xs = unnest $ fmap (apply' rs) xs where
-  apply' rs' x = case (lookup x rs') of
-    Nothing -> nest x
-    Just x' -> x'
+-- TODO replace with a real random choice function
+choose :: [(Chance, a)] ->  Maybe a
+choose ((_,x):_) = Just x
+choose _ = Nothing
 
-generateForever :: (Nested f, Functor f, Eq a) => [(a, f a)] -> f a -> [f a]
-generateForever rs xs = [next'] ++ generateForever rs next'  where
-  next' = next rs xs
+applyRules :: LeftContext -> RightContext -> [Rule] -> Node -> [Node]
+applyRules lc rc []     n = [n]
+applyRules lc rc (r:rs) n = case applyRule n lc rc r of
+  Nothing -> applyRules lc rc rs n
+  Just x  -> x
+  where
+    applyRule :: Node -> LeftContext -> RightContext -> Rule -> Maybe [Node]
+    applyRule n lc rc (DeterministicRule cont cond match repl) =
+      case (match n && cont lc rc && cond lc rc n) of
+        True  -> Just repl
+        False -> Nothing
+    applyRule n lc rc (StochasticRule rs) = case (choose rs) of
+      Just r -> applyRule n lc rc r
+      Nothing -> Nothing
 
-generate :: (Nested f, Functor f, Eq a) => Int -> [(a, f a)] -> f a -> [f a]
-generate i rs xs = take i $ generateForever rs xs 
+-- this will need to be refitted to allow branching later
+step :: [Rule] -> [Node] -> [Node]
+step _ [] = []
+step rs xs = concat $ step' rs [] xs where
+  step' :: [Rule] -> [Node] -> [Node] -> [[Node]]
+  step' _  _  []     = []
+  step' rs lc [r]    = [applyRules lc [] rs r]
+  step' rs lc (r:rc) = [applyRules lc rc rs r] ++ step' rs (r:lc) rc
+
+walk :: [Rule] -> [Node] -> [[Node]]
+walk rs n = [n] ++ walk' rs n where
+  walk' rs n = [next'] ++ walk' rs next' where
+    next' = step rs n
+
+maybeTransDol :: String -> Maybe [Node]
+maybeTransDol = sequence . map translate'
+  where
+    translate' :: Char -> Maybe Node
+    translate' 'F' = Just $ NodeDraw [] 1
+    translate' '+' = Just $ NodeRotate [] 270 0 0
+    translate' '-' = Just $ NodeRotate [] 90  0 0
+    translate' _   = Nothing
+
+transDol :: String -> [Node]
+transDol = catMaybes . map translate'
+  where
+    translate' :: Char -> Maybe Node
+    translate' 'F' = Just $ NodeDraw [] 1
+    translate' '+' = Just $ NodeRotate [] 270 0 0
+    translate' '-' = Just $ NodeRotate [] 90  0 0
+    translate'  _  = Nothing
+
+transDolSys :: String -> String -> Int -> System
+transDolSys b r i = System {
+      systemBasis = transDol b
+    , systemRules = [fromF (transDol r)]
+    , systemSteps = i
+  } where
+
+    isF :: Node -> Bool
+    isF (NodeDraw _ _) = True
+    isF _ = False
+
+    fromF :: [Node] -> Rule
+    fromF repl =
+      DeterministicRule {
+          ruleContext     = ignoreContext
+        , ruleCondition   = unconditional
+        , ruleMatch       = isF
+        , ruleReplacement = repl
+      }
+
+ignoreContext :: LeftContext -> RightContext -> Bool
+ignoreContext _ _ = True
+
+unconditional :: LeftContext -> RightContext -> Node -> Bool
+unconditional _ _ _ = True

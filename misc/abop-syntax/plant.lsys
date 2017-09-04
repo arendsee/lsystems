@@ -1,0 +1,22 @@
+n=5, d=18
+
+#define r4 ////
+#ignore +-
+
+plant
+
+plant     -> internode + [ plant + flower ] -- //
+             [ -- leaf ] internode [ ++ leaf ] -
+             [ plant flower ] ++ plant flower ;
+
+internode -> F seg [//&& leaf ] [//^^ leaf ] F seg ;
+
+seg       -> seg F seg ;
+
+leaf      -> [' { +f-ff-f+ | +f-ff-f } ] ;
+
+flower    -> [ &&& pedicel '/ wedge r4 wedge r4 wedge r4 wedge r4 wedge ] ;
+
+pedicel   -> FF ;
+
+wedge     -> ['^F] [ { &&&& -f+f | -f+f } ] ;

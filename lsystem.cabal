@@ -2,7 +2,7 @@
 -- documentation, see http://haskell.org/cabal/users-guide/
 
 name:                lsystem
-version:             0.0.0
+version:             0.1.0
 synopsis:            A toy L-system implementation
 homepage:            https://github.com/arendsee/lsystem
 license:             MIT
@@ -16,7 +16,7 @@ cabal-version:       >=1.10
 library
   exposed-modules:    Lsystem,
                       Lsystem.Generator,
-                      Lsystem.Turtle,
+                      Lsystem.Grammar,
                       Lsystem.Render
 
   default-extensions: FlexibleContexts,
@@ -25,21 +25,8 @@ library
 
   build-depends:      base >=4.8 && <4.9,
                       diagrams-lib,
-                      diagrams-svg
+                      diagrams-svg,
+                      parsec
 
   hs-source-dirs:     src
   default-language:   Haskell2010
-
-executable lsystem
-  default-language: Haskell2010
-  main-is: Main.hs
-  hs-source-dirs: executable
-  build-depends: base,
-                 lsystem,
-                 split,
-                 diagrams-svg,
-                 diagrams-lib
-  default-extensions: FlexibleContexts,
-                      NoMonomorphismRestriction,
-                      TypeFamilies
-  ghc-options: -Wall
