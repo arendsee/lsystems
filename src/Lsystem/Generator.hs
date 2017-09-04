@@ -10,46 +10,64 @@ module Lsystem.Generator
 ) where
 
 import Data.Maybe
+import qualified System.Random as SR
 
 import Lsystem.Grammar
 
--- TODO replace with a real random choice function
-choose :: [(Chance, a)] ->  Maybe a
-choose ((_,x):_) = Just x
-choose _ = Nothing
+choose :: SR.StdGen -> [(Chance, a)] -> (SR.StdGen, Maybe a)
+choose g rs =  case (SR.randomR (0.0, 1.0) g) of
+  (p, g') -> (g', choose' p (cumulative 0 rs)) where
 
-applyRules :: LeftContext -> RightContext -> [Rule] -> Node -> [Node]
-applyRules lc rc []     n = [n]
-applyRules lc rc (r:rs) n = case applyRule n lc rc r of
-  Nothing -> applyRules lc rc rs n
-  Just x  -> x
+    cumulative :: Chance -> [(Chance, a)] -> [(Chance, a)]
+    cumulative _ []  = [] 
+    cumulative p [(q, x)]    = [(p + q, x)] 
+    cumulative p ((q, x):rs) = [(p + q, x)] ++ cumulative (p + q) rs
+
+    choose' :: Chance -> [(Chance, a)] -> Maybe a
+    choose' _ [] = Nothing
+    choose' p ((q, x):rs')
+      | p < 0 || p > 1 = error "Invalid random generator: probability values must be between 0 and 1"
+      | q < 0 || q > 1 = error "Invalid stochastic rule: probability must be between 0 and 1"
+      | p <= q = Just x
+      | otherwise = choose' (p + q) rs'
+
+applyRules :: SR.StdGen -> LeftContext -> RightContext -> [Rule] -> Node -> [Node]
+applyRules _ _  _  []     n = [n]
+applyRules g lc rc (r:rs) n = case applyRule g n lc rc r of
+  (g', Nothing) -> applyRules g lc rc rs n
+  (_, Just x) -> x
   where
-    applyRule :: Node -> LeftContext -> RightContext -> Rule -> Maybe [Node]
-    applyRule n lc rc (DeterministicRule cont cond match repl) =
+    applyRule :: SR.StdGen -> Node -> LeftContext -> RightContext -> Rule -> (SR.StdGen, Maybe [Node])
+    applyRule g' n lc rc (DeterministicRule cont cond match repl) =
       case (match n && cont lc rc && cond lc rc n) of
-        True  -> Just repl
-        False -> Nothing
-    applyRule n lc rc (StochasticRule rs) = case (choose rs) of
-      Just r -> applyRule n lc rc r
-      Nothing -> Nothing
+        True  -> (g', Just repl)
+        False -> (g', Nothing)
+    applyRule g' n lc rc (StochasticRule rs) = case (choose g' rs) of
+      (g'', Just r) -> applyRule g'' n lc rc r
+      (g'', _) -> (g'', Nothing)
 
 -- this will need to be refitted to allow branching later
-step :: [Rule] -> [Node] -> [Node]
-step _ [] = []
-step rs xs = concat $ step' rs [] xs where
-  step' :: [Rule] -> [Node] -> [Node] -> [[Node]]
-  step' _  _  []     = []
-  step' rs lc [r]    = [applyRules lc [] rs r]
-  step' rs lc (r:rc) = [applyRules lc rc rs r] ++ step' rs (r:lc) rc
+step :: SR.StdGen -> [Rule] -> [Node] -> [Node]
+step _ _ [] = []
+step g rs xs = concat $ step' g rs [] xs where
+  step' :: SR.StdGen -> [Rule] -> [Node] -> [Node] -> [[Node]]
+  step' _ _  _  []      = [[]]
+  step' g' rs lc [r]    = [applyRules g' lc [] rs r]
+  step' g' rs lc (r:rc) = [applyRules g1 lc rc rs r] ++ step' g2 rs (r:lc) rc where
+    gs = SR.split g'
+    g1 = fst gs
+    g2 = snd gs
 
-walk :: [Rule] -> [Node] -> [[Node]]
-walk rs n = [n] ++ walk' rs n where
-  walk' rs n = [next'] ++ walk' rs next' where
-    next' = step rs n
+walk :: SR.StdGen -> [Rule] -> [Node] -> [[Node]]
+walk g rs n = [n] ++ walk' g rs n where
+  walk' g' rs n = [next'] ++ future' where
+    gs      = SR.split g'
+    next'   = step  (fst gs) rs n
+    future' = walk' (snd gs) rs next'
 
 translate' :: Double -> Char -> Maybe Node
 translate' _ 'F' = Just $ NodeDraw [] 1
-translate' a '+' = Just $ NodeRotate [] (-1 * a) 0 0 -- '+' represents a clockwise turn, which is of negative degree
+translate' a '+' = Just $ NodeRotate [] (-1 * a) 0 0 -- '+' means clockwise
 translate' a '-' = Just $ NodeRotate [] (     a) 0 0
 translate' _  _  = Nothing
 

@@ -12,7 +12,9 @@ something that can be read by Blender).
 
 The data structures I used to represent the L-systems are very general. They
 allow stochastic, context-sensitive, parametric L-systems (the algorithms and
-graphics for these higher forms aren't implemented yet). But expressing systems in this general format is extremely verbose, so I wrote the special handler `transDolSys`.
+graphics for these higher forms aren't implemented yet). But expressing systems
+in this general format is extremely verbose, so I wrote the special handler
+`transDolSys`.
 
 As I implement the higher features, I will probably add similar convenience
 functions. Ultimately, I would like to have a full parser for the L-system
@@ -20,9 +22,10 @@ grammar used in ABOP.
 
 ``` haskell
 import Lsystem
+import System.Random
 
 render' :: String -> System -> IO ()
-render' = renderSystem (400,400)
+render' = renderSystem (mkStdGen 42) (400,400)
 
 main :: IO ()
 main = do
