@@ -39,15 +39,16 @@ applyRules lc rc (r:rs) n = case applyRule n lc rc r of
 -- this will need to be refitted to allow branching later
 step :: [Rule] -> [Node] -> [Node]
 step _ [] = []
-step rs (x:xs) = concat $ step' rs [] xs where
+step rs xs = concat $ step' rs [] xs where
   step' :: [Rule] -> [Node] -> [Node] -> [[Node]]
   step' _  _  []     = []
   step' rs lc [r]    = [applyRules lc [] rs r]
   step' rs lc (r:rc) = [applyRules lc rc rs r] ++ step' rs (r:lc) rc
 
 walk :: [Rule] -> [Node] -> [[Node]]
-walk rs n = [next'] ++ walk rs next' where
-  next' = step rs n
+walk rs n = [n] ++ walk' rs n where
+  walk' rs n = [next'] ++ walk' rs next' where
+    next' = step rs n
 
 ignoreContext :: LeftContext -> RightContext -> Bool
 ignoreContext _ _ = True
@@ -79,11 +80,19 @@ fromF repl =
 oF :: Node -- F
 oF = NodeDraw [] 1
 
-o90 :: Node -- +
+o90 :: Node -- -
 o90 = NodeRotate [] 90  0 0
 
-o270 :: Node  -- -
+o270 :: Node  -- +
 o270 = NodeRotate [] 270 0 0
 
 oSquare :: [Node] -- F-F-F-F
-oSquare = [oF, o90, oF, o90, oF, o90, oF, o90, oF]
+oSquare = [
+      oF     -- F
+    , o270   -- -
+    , oF     -- F
+    , o270   -- -
+    , oF     -- F
+    , o270   -- -
+    , oF     -- F
+  ]
