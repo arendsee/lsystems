@@ -33,6 +33,7 @@ data System = System {
 data Node
   = NodeDraw [Double] Double 
   | NodeRotate [Double] Yaw Pitch Roll
+  | NodeBranch [[Node]]
   deriving(Eq, Ord, Show)
 
 data Rule

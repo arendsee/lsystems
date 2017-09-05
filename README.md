@@ -74,3 +74,20 @@ main = do
 ```
 
 ![s1](images/s1.png)
+
+
+## TODO
+
+ - [x] deterministic
+ - [x] stochastic
+ - [ ] branching
+ - [ ] parametric
+ - [ ] context sensitive
+ - [x] 2D visualization
+ - [ ] 3D visualization
+ - [ ] animation
+ - [ ] polygons
+ - [ ] colors and such
+ - [ ] ABOP language parsing
+ - [ ] edge rewriting
+ - [ ] node rewriting
