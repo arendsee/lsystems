@@ -1,6 +1,8 @@
 module Lsystem.Sugar
 (
     transDol
+  , ignoreContext
+  , unconditional
   , maybeTransDol
   , transDolSys
   , transSolSys
@@ -39,6 +41,11 @@ transSolSys n angle basis replacements = System {
     mkRule :: String -> Rule 
     mkRule = fromF . transDol angle
 
+ignoreContext :: LeftContext -> RightContext -> Bool
+ignoreContext _ _ = True
+
+unconditional :: LeftContext -> RightContext -> Node -> Bool
+unconditional _ _ _ = True
 
 
 --------------------------

@@ -2,11 +2,10 @@ module Lsystem.Generator
 (
     step
   , walk
-  , ignoreContext
-  , unconditional
 ) where
 
 import qualified System.Random as SR
+import qualified Control.Monad.Trans.State as TS
 
 import Lsystem.Grammar
 
@@ -59,8 +58,60 @@ walk rs g ns = [ns] ++ walk' rs g ns where
     next'   = concat $ rContextMap (fst gs) (step rs) [] ns
     future' = walk' rs (snd gs) next'
 
-ignoreContext :: LeftContext -> RightContext -> Bool
-ignoreContext _ _ = True
 
-unconditional :: LeftContext -> RightContext -> Node -> Bool
-unconditional _ _ _ = True
+contexts :: [a] -> [[a]]
+contexts [] = [[]]
+contexts (x:xs) = [x:xs] ++ contexts xs 
+
+
+data W = W {
+      wGen :: SR.StdGen
+    , wLeft :: [Node]
+    , wRight :: [Node]
+    , wCurrent :: Node
+    , wRule :: [Rule]
+    , wNextGen :: [Node]
+  }
+
+emptyW :: W = W {
+      wGen     = SR.mkStdGen 0
+    , wLeft    = []
+    , wRight   = []
+    , wRule    = []
+    , wNextGen = []
+  }
+
+initW :: Int -> System -> W
+initW seed (System _ []  _) = emptyW { wGen = SR.mkStdGen seed }
+initW seed (System ns rs _) = emptyW {
+      wGen     = SR.mkStdGen seed
+    , wRight   = ns
+    , wRule    = rs
+  }
+
+branch :: W -> State W [[Node]]
+
+step :: W -> State W [Node]
+
+getRule :: W -> State W Rule
+
+applyRule :: Rule -> W -> State W Rule
+
+
+-- step :: W -> Maybe W
+-- step (W _   _  [] _ _ ) -> Nothing
+-- step (W gen lc rc (NodeBranch nss) rs) -> undefined
+-- step (W gen lc rc c rs) -> undefined
+--
+--
+-- mkBranch :: W -> [[Node]] -> W
+-- mkBranch w nss = w {wGen = g', wLeft =
+--
+-- mkBranch w [] = w
+-- mkBranch (W gen lc rc c rs) nss = W {
+--       wGen :: SR.StdGen
+--     , wLeft :: [Node]
+--     , wRight :: [Node]
+--     , wCurrent :: Node
+--     , wRule :: [Rule]
+--   }
