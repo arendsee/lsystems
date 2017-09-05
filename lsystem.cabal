@@ -2,7 +2,7 @@
 -- documentation, see http://haskell.org/cabal/users-guide/
 
 name:                lsystem
-version:             0.2.0
+version:             0.3.0
 synopsis:            A toy L-system implementation
 homepage:            https://github.com/arendsee/lsystem
 license:             MIT
