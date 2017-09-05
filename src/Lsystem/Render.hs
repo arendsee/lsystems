@@ -16,9 +16,9 @@ import Diagrams.Backend.SVG
 import qualified System.Random as SR
 
 diagramSystem :: SR.StdGen -> System -> Diagram B
-diagramSystem g (System basis rules steps) = diagramPacman diagram' where
-  diagram' = foldl eat pacman0 nodes'
-  nodes'   = walk g rules basis !! steps
+diagramSystem g (System basis rules steps) = diagramPacman pacman' where
+  pacman' = foldl eat pacman0 nodes'
+  nodes'  = walk g rules basis !! steps
 
 renderSystem :: SR.StdGen -> (Double,Double) -> String -> System -> IO ()
 renderSystem g (x,y) filename sys =
@@ -66,7 +66,7 @@ eat t (NodeBranch nss) =
   t { pacmanSpawn = pacmanSpawn t ++ map spawn nss } where 
     spawn :: [Node] -> Pacman
     spawn [] = spawnPacman t
-    spawn (n:ns) = foldl eat (spawnPacman t) ns
+    spawn ns = foldl eat (spawnPacman t) ns
 
 diagramPacman :: Pacman -> Diagram B
 diagramPacman p = mkDia p <> mergeSpawn p where

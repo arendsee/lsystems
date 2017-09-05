@@ -44,4 +44,3 @@ data Rule
       , ruleReplacement :: [Node]
     }
   | StochasticRule [(Chance, Rule)]
-

@@ -76,6 +76,57 @@ main = do
 ![s1](images/s1.png)
 
 
+### Branching
+
+I currently don't have any sugar for branching. So I will do this the hard way.
+
+``` haskell
+import Lsystem
+import System.Random
+
+render' :: String -> System -> IO ()
+render' = renderSystem (mkStdGen 42) (400,400)
+
+isF :: Node -> Bool
+isF (NodeDraw _ _) = True
+isF _ = False
+
+-- -- This example is taken from ABOP pp. 25
+-- n=5 d=25.7
+-- F -> F[+F]F[-F]F
+
+b1 = System {
+      systemBasis = [NodeRotate [] (90) 0 0, NodeDraw [] 1] -- F
+    , systemRules = [               -- F[+F]F[-F]F
+        DeterministicRule {
+            ruleContext = ignoreContext
+          , ruleCondition = unconditional
+          , ruleMatch = isF
+          , ruleReplacement = [
+                NodeDraw [] 1 ------------------ F
+              , NodeBranch [[ ------------------ [+F]
+                    NodeRotate [] (-25.7) 0 0
+                  , NodeDraw [] 1
+                ]]
+              , NodeDraw [] 1 ------------------- F
+              , NodeBranch [[ ------------------- [-F]
+                    NodeRotate [] 25.7 0 0
+                  , NodeDraw [] 1
+                ]]
+              , NodeDraw [] 1 ------------------- F
+            ]
+        }
+      ]
+    , systemSteps = 5
+  }
+
+main :: IO ()
+main = do
+  render' "b1.svg" s1
+```
+
+![b1](images/b1.png)
+
 ## TODO
 
  - [x] deterministic
