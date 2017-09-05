@@ -108,12 +108,12 @@ b1 = System {
                     NodeRotate [] (-25.7) 0 0
                   , NodeDraw [] 1
                 ]]
-              , NodeDraw [] 1 ------------------- F
-              , NodeBranch [[ ------------------- [-F]
+              , NodeDraw [] 1 ------------------ F
+              , NodeBranch [[ ------------------ [-F]
                     NodeRotate [] 25.7 0 0
                   , NodeDraw [] 1
                 ]]
-              , NodeDraw [] 1 ------------------- F
+              , NodeDraw [] 1 ------------------ F
             ]
         }
       ]
@@ -122,7 +122,7 @@ b1 = System {
 
 main :: IO ()
 main = do
-  render' "b1.svg" s1
+  render' "b1.svg" b1
 ```
 
 ![b1](images/b1.png)
@@ -131,14 +131,18 @@ main = do
 
  - [x] deterministic
  - [x] stochastic
- - [ ] branching
+ - [x] branching
  - [ ] parametric
  - [ ] context sensitive
+ - [x] stochastic sugar
+ - [x] deterministic sugar
+ - [ ] branching sugar
+ - [ ] parametric sugar
+ - [ ] context sensitive sugar
  - [x] 2D visualization
+ - [ ] 3D handling
  - [ ] 3D visualization
  - [ ] animation
  - [ ] polygons
  - [ ] colors and such
  - [ ] ABOP language parsing
- - [ ] edge rewriting
- - [ ] node rewriting
