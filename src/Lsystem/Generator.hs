@@ -42,54 +42,22 @@ applyRules g lc rc (r:rs) n = case applyRule g n lc rc r of
       (g'', Just r) -> applyRule g'' n lc rc r
       (g'', _) -> (g'', Nothing)
 
+rContextMap :: SR.StdGen -> (SR.StdGen -> [a] -> [a] -> a -> b) -> [a] -> [a] -> [b]
+rContextMap _ _ _ [] = []
+rContextMap g f lc (r:rc) = [f g lc rc r] ++ rContextMap (snd $ SR.next g) f (r:lc) rc
 
-step :: SR.StdGen -> [Rule] -> [Node] -> [Node]
-step _ _ [] = []
-step g rs xs = concat $ step' g rs [] xs where
-  step' :: SR.StdGen -> [Rule] -> [Node] -> [Node] -> [[Node]]
-  step' _ _  _  []      = [[]]
-  step' g' rs lc [NodeBranch nss] = [[NodeBranch (map (concat . step' g' rs lc) nss)]]
-  step' g' rs lc ((NodeBranch nss):rc) =
-    [[NodeBranch (map (concat . step' g' rs lc) nss)]] ++
-    step' g2 rs ((NodeBranch nss):lc) rc
-    where
-      gs = SR.split g'
-      g1 = fst gs
-      g2 = snd gs
-  step' g' rs lc [r] = [applyRules g' lc [] rs r]
-  step' g' rs lc (r:rc) =
-    [applyRules g1 lc rc rs r] ++
-    step' g2 rs (r:lc) rc
-    where
-      gs = SR.split g'
-      g1 = fst gs
-      g2 = snd gs
+step :: [Rule] -> SR.StdGen -> [Node] -> [Node] -> Node -> [Node]
+step rs g lc rc (NodeBranch nss) = [NodeBranch (map desc' nss)] where
+  desc' :: [Node] -> [Node]
+  desc' = concat . rContextMap g (step rs) lc
+step rs g lc rc r = applyRules g lc rc rs r
 
-
--- data W = W {
---       WLeftContext  :: [Node]
---     , WRightContext :: [Node]
---     , WNewNodes     :: [Node]
---     , WRGen         :: SR.StdGen
---     , WRules        :: [Rule]
---   }
---
--- newX :: [Node] -> [Node] -> X
--- newX lc rs = X {
---       XLeftContext :: lc
---     , XRightContext :: rs
---     , XNewNodes :: []
---   }
---
--- stepX :: X -> X
--- stepX x =
-
-walk :: SR.StdGen -> [Rule] -> [Node] -> [[Node]]
-walk g rs n = [n] ++ walk' g rs n where
-  walk' g' rs n = [next'] ++ future' where
+walk :: [Rule] -> SR.StdGen -> [Node] -> [[Node]]
+walk rs g ns = [ns] ++ walk' rs g ns where
+  walk' rs g' ns = [next'] ++ future' where
     gs      = SR.split g'
-    next'   = step  (fst gs) rs n
-    future' = walk' (snd gs) rs next'
+    next'   = concat $ rContextMap (fst gs) (step rs) [] ns
+    future' = walk' rs (snd gs) next'
 
 ignoreContext :: LeftContext -> RightContext -> Bool
 ignoreContext _ _ = True

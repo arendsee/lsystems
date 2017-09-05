@@ -18,7 +18,7 @@ import qualified System.Random as SR
 diagramSystem :: SR.StdGen -> System -> Diagram B
 diagramSystem g (System basis rules steps) = diagramPacman pacman' where
   pacman' = foldl eat pacman0 nodes'
-  nodes'  = walk g rules basis !! steps
+  nodes'  = walk rules g basis !! steps
 
 renderSystem :: SR.StdGen -> (Double,Double) -> String -> System -> IO ()
 renderSystem g (x,y) filename sys =
