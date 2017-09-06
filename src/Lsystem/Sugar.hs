@@ -9,6 +9,7 @@ module Lsystem.Sugar
   , matchF
   , matchDummy
   , contextMatch
+  , similar
 ) where
 
 import Data.Maybe
@@ -82,6 +83,7 @@ similar (NodeBranch mss) (NodeBranch nss) = any id $ map (anyBranch nss) mss
   similarBranch [] _ = True  -- True if A is empty
   similarBranch _ [] = False -- False if B is empty
   similarBranch ns ms = all id $ zipWith similar ns ms
+similar _ _ = False
 
 contextMatch
   :: [Node] -- elements to ignore
@@ -104,8 +106,8 @@ contextMatch ss lpat rpat lc rc x =
   contextMatch' _  _      []     x = Just x
   contextMatch' _  []     _      _ = Nothing
   contextMatch' ss (c:cs) (m:ms) x
-    | any id $ map (similar m) ss = contextMatch' cs ss (m:ms) x 
-    | similar m c = contextMatch' cs ss ms x 
+    | any id $ map (similar c) ss = contextMatch' ss cs (m:ms) x 
+    | similar m c = contextMatch' ss cs ms x 
     | otherwise = Nothing
 
 ignoreContext :: LeftContext -> RightContext -> a -> Maybe a
