@@ -87,10 +87,6 @@ import System.Random
 render' :: String -> System -> IO ()
 render' = renderSystem (mkStdGen 42) (400,400)
 
-isF :: Node -> Bool
-isF (NodeDraw _ _) = True
-isF _ = False
-
 -- -- This example is taken from ABOP pp. 25
 -- n=5 d=25.7
 -- F -> F[+F]F[-F]F
@@ -101,7 +97,7 @@ b1 = System {
         DeterministicRule {
             ruleContext = ignoreContext
           , ruleCondition = unconditional
-          , ruleMatch = isF
+          , ruleMatch = matchF
           , ruleReplacement = [
                 NodeDraw [] 1 ------------------ F
               , NodeBranch [[ ------------------ [+F]
@@ -139,11 +135,53 @@ Putting together the previous two examples, we can make more plant-like construc
 ![sb1-5](images/sb1-5.png)
 
 
+### Node rewriting and dummy variables
+
+
+``` haskell
+-- n=5 f=22.5
+-- X
+-- X -> F-[[X]+X]+F[+FX]-X
+-- F -> FF
+
+dummy = System {
+      systemBasis = [NodeRotate [] 90 0 0, x]
+    , systemRules = [
+        DeterministicRule {
+            ruleContext = ignoreContext
+          , ruleCondition = unconditional
+          , ruleMatch = matchDummy "X"
+          , ruleReplacement = [
+                f, m                                   -- F-
+              , NodeBranch [[NodeBranch [[x]], p, x]]  -- [[X]+X]
+              , p, f                                   -- +F
+              , NodeBranch [[p,f,x]]                   -- [+FX]
+              , m, x                                   -- -X
+            ]
+        },
+        DeterministicRule {
+            ruleContext = ignoreContext
+          , ruleCondition = unconditional
+          , ruleMatch = matchF
+          , ruleReplacement = [f,f]
+        }
+      ]
+    , systemSteps = 5
+  } where
+  p = NodeRotate [] 22.5    0 0
+  m = NodeRotate [] (-22.5) 0 0
+  f = NodeDraw [] 1
+  x = NodeDummy "X"
+```
+
+![dummy](images/dummy.png)
+
 ## TODO
 
  - [x] deterministic
  - [x] stochastic
  - [x] branching
+ - [x] dummy variables
  - [ ] parametric
  - [ ] context sensitive
  - [x] stochastic sugar

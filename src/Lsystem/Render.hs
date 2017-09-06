@@ -56,12 +56,11 @@ eat :: Pacman -> Node -> Pacman
 eat t (NodeRotate _ r _ _) = t { pacmanAngle = pacmanAngle t <> (r @@ deg) }
 eat t (NodeDraw _ x) = t {
       pacmanEnd = pacmanEnd t # translate v'
-      -- Grow backwards for performance reasons. This could cause confusion
-      -- later, since it will result in the diagrams having backwards begin
-      -- and end points.
+      -- build backwards for performance reasons, this will need to be reversed later
     , pacmanVectors = v' : (pacmanVectors t)
   } where
     v' = e (pacmanAngle t) # scale x
+eat t (NodeDummy _) = t
 eat t (NodeBranch nss) =
   t { pacmanSpawn = pacmanSpawn t ++ map spawn nss } where 
     spawn :: [Node] -> Pacman
@@ -70,5 +69,6 @@ eat t (NodeBranch nss) =
 
 diagramPacman :: Pacman -> Diagram B
 diagramPacman p = mkDia p <> mergeSpawn p where
-  mkDia = strokeLocTrail . (flip at) (pacmanStart p) . fromOffsets . pacmanVectors
+  -- reverse the vectors here, to rectify the backwards build in `eat`
+  mkDia = strokeLocTrail . (flip at) (pacmanStart p) . fromOffsets . reverse . pacmanVectors
   mergeSpawn = mconcat . map diagramPacman . pacmanSpawn
