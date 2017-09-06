@@ -92,7 +92,7 @@ render' = renderSystem (mkStdGen 42) (400,400)
 -- F -> F[+F]F[-F]F
 
 b1 = System {
-      systemBasis = [NodeRotate [] (90) 0 0, NodeDraw [] 1] -- F
+      systemBasis = [NodeDraw [] 1] -- F
     , systemRules = [               -- F[+F]F[-F]F
         DeterministicRule {
             ruleContext = ignoreContext
@@ -145,7 +145,7 @@ Putting together the previous two examples, we can make more plant-like construc
 -- F -> FF
 
 dummy = System {
-      systemBasis = [NodeRotate [] 90 0 0, x]
+      systemBasis = [x]
     , systemRules = [
         DeterministicRule {
             ruleContext = ignoreContext
