@@ -127,6 +127,18 @@ main = do
 
 ![b1](images/b1.png)
 
+
+### Stochastic branching
+
+Putting together the previous two examples, we can make more plant-like constructions
+
+![sb1](images/sb1.png)
+![sb2](images/sb2.png)
+![sb3](images/sb3.png)
+![sb4](images/sb4.png)
+![sb5](images/sb5.png)
+
+
 ## TODO
 
  - [x] deterministic
