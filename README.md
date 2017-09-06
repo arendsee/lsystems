@@ -178,9 +178,6 @@ dummy = System {
 
 ### Contextual L-systems
 
-Currently something is broken and this produces no output. But it is late ...
-I'll fix it later.
-
 ``` haskell
 -- n=26 d=25.75
 -- ignore  +-F
@@ -198,28 +195,26 @@ I'll fix it later.
 -- * + * -> -
 
 contextual = System {
-      systemBasis = [f,b,f,b,f,b]
+      systemBasis = [f,a,f,b,f,b]
     , systemRules = [
-          DeterministicRule c000          unconditional isA [a]
-        , DeterministicRule c001          unconditional isA [a, NodeBranch [[ p,f,a,f,a ]]]
-        , DeterministicRule c010          unconditional isA [a]
-        , DeterministicRule c011          unconditional isA [b]
-
-        , DeterministicRule c100          unconditional isA [a]
-        , DeterministicRule c101          unconditional isA [a,f,a]
-        , DeterministicRule c110          unconditional isA [a]
-        , DeterministicRule c111          unconditional isA [a]
-
-        , DeterministicRule ignoreContext unconditional isP [m]
-        , DeterministicRule ignoreContext unconditional isM [p]
+          StochasticRule [(0.97, DeterministicRule c000          unconditional isA [b]                              )] -- 0 0 0 -> 1
+        , StochasticRule [(0.97, DeterministicRule c001          unconditional isA [a]                              )] -- 0 0 1 -> 0
+        , StochasticRule [(0.97, DeterministicRule c010          unconditional isB [a]                              )] -- 0 1 0 -> 0
+        , StochasticRule [(0.97, DeterministicRule c011          unconditional isB [b,f,b]                          )] -- 0 1 1 -> 1F1
+        , StochasticRule [(0.97, DeterministicRule c100          unconditional isA [b]                              )] -- 1 0 0 -> 1
+        , StochasticRule [(0.97, DeterministicRule c101          unconditional isA [b, NodeBranch [[ p,f,b,f,b ]]]  )] -- 1 0 1 -> 1[+F1F1]
+        , StochasticRule [(0.97, DeterministicRule c110          unconditional isB [b]                              )] -- 1 1 0 -> 1
+        , StochasticRule [(1.00, DeterministicRule c111          unconditional isB [a]                              )] -- 1 1 1 -> 0
+        , StochasticRule [(0.97, DeterministicRule ignoreContext unconditional isP [m]                              )] -- * - * -> +
+        , StochasticRule [(0.98, DeterministicRule ignoreContext unconditional isM [p]                              )] -- * + * -> -
       ]
-    , systemSteps = 26
+    , systemSteps = 27
   } where
 
   f = NodeDraw [] 1
   a = NodeDummy "0"
   b = NodeDummy "1"
-  p = NodeRotate [] 25.75    0 0
+  p = NodeRotate []   25.75  0 0
   m = NodeRotate [] (-25.75) 0 0
 
   ss = [p,m,f]
@@ -228,12 +223,14 @@ contextual = System {
   isB = matchDummy "1"
 
   isP :: Node -> a -> Maybe a
-  isP n x | n == p = Just x
-          | otherwise = Nothing
+  isP (NodeRotate _ a _ _) x | a > 0 = Just x
+                             | otherwise = Nothing
+  isP _ _ = Nothing
 
   isM :: Node -> a -> Maybe a
-  isM n x | n == m = Just x
-          | otherwise = Nothing
+  isM (NodeRotate _ a _ _) x | a < 0 = Just x
+                             | otherwise = Nothing
+  isM _ _ = Nothing
   
   c000 = contextMatch ss [a] [a]
   c001 = contextMatch ss [a] [b]
@@ -244,6 +241,11 @@ contextual = System {
   c110 = contextMatch ss [b] [a] 
   c111 = contextMatch ss [b] [b] 
 ```
+
+![con1](images/con-1.png)
+![con2](images/con-2.png)
+![con3](images/con-3.png)
+
 
 ## TODO
 
