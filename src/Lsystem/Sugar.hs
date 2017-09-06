@@ -41,20 +41,20 @@ transSolSys n angle basis replacements = System {
     mkRule :: String -> Rule 
     mkRule = fromF . transDol angle
 
-ignoreContext :: LeftContext -> RightContext -> Bool
-ignoreContext _ _ = True
+ignoreContext :: LeftContext -> RightContext -> a -> Maybe a
+ignoreContext _ _ x = Just x
 
-unconditional :: LeftContext -> RightContext -> Node -> Bool
-unconditional _ _ _ = True
+unconditional :: LeftContext -> RightContext -> Node -> a -> Maybe a
+unconditional _ _ _ x = Just x
 
 
 --------------------------
 -- local utility functions
 --------------------------
 
-isF :: Node -> Bool
-isF (NodeDraw _ _) = True
-isF _ = False
+isF :: Node -> a -> Maybe a
+isF (NodeDraw _ _) x = Just x
+isF _ _ = Nothing
 
 fromF :: [Node] -> Rule
 fromF repl =

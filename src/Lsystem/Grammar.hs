@@ -2,7 +2,8 @@ module Lsystem.Grammar
 (
     System(..)
   , Node(..)
-  , Rule(..)
+  , GeneralRule(..)
+  , Rule
   , Distance
   , Yaw
   , Pitch
@@ -36,11 +37,12 @@ data Node
   | NodeBranch [[Node]]
   deriving(Eq, Ord, Show)
 
-data Rule
+type Rule = GeneralRule Node
+data GeneralRule a
   = DeterministicRule {
-        ruleContext     :: LeftContext -> RightContext -> Bool
-      , ruleCondition   :: LeftContext -> RightContext -> Node -> Bool
-      , ruleMatch       :: Node -> Bool
-      , ruleReplacement :: [Node]
+        ruleContext     :: [a] -> [a] ->      ([a] -> Maybe [a])
+      , ruleCondition   :: [a] -> [a] -> a -> ([a] -> Maybe [a])
+      , ruleMatch       ::               a -> ([a] -> Maybe [a])
+      , ruleReplacement :: [a]
     }
   | StochasticRule [(Chance, Rule)]
