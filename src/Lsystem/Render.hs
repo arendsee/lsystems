@@ -38,7 +38,7 @@ pacman0 :: Pacman
 pacman0 = Pacman {
       pacmanStart   = p2 (0,0) :: P2 Double
     , pacmanEnd     = p2 (0,0) :: P2 Double
-    , pacmanAngle   = 90 @@ deg :: Angle Double
+    , pacmanAngle   = 0 @@ deg :: Angle Double
     , pacmanSpawn   = []
     , pacmanVectors = []
   }
