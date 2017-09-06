@@ -8,6 +8,7 @@ module Lsystem.Sugar
   , transSolSys
   , matchF
   , matchDummy
+  , contextMatch
 ) where
 
 import Data.Maybe
@@ -43,20 +44,72 @@ transSolSys n angle basis replacements = System {
     mkRule :: String -> Rule 
     mkRule = fromF . transDol angle
 
-ignoreContext :: LeftContext -> RightContext -> a -> Maybe a
-ignoreContext _ _ x = Just x
-
-unconditional :: LeftContext -> RightContext -> Node -> a -> Maybe a
-unconditional _ _ _ x = Just x
-
 matchF :: Node -> a -> Maybe a
 matchF (NodeDraw _ _) x = Just x
 matchF _ _ = Nothing
 
 matchDummy :: String -> Node -> a -> Maybe a
-matchDummy s1 (NodeDummy s2) x | s1 == s2  = Just x
-                               | otherwise = Nothing
+matchDummy s1 (NodeDummy s2) x
+  | s1 == s2  = Just x
+  | otherwise = Nothing
 matchDummy _ _ _ = Nothing
+
+matchRotation :: Node -> a -> Maybe a
+matchRotation (NodeRotate _ _ _ _) x = Just x
+matchRotation _ _ = Nothing
+
+unconditional :: LeftContext -> RightContext -> Node -> a -> Maybe a
+unconditional _ _ _ x = Just x
+
+-- Check is A is a similar to B. For branches, A must be a subtree of B.
+similar
+  :: Node -- A
+  -> Node -- B
+  -> Bool -- True is A is in B (where `in` is weirdly defined ...)
+similar (NodeDummy s) (NodeDummy t) = s == t
+similar (NodeDraw _ _ ) (NodeDraw _ _) = True
+similar (NodeRotate _ _ _ _) (NodeRotate _ _ _ _) = True
+similar (NodeBranch mss) (NodeBranch nss) = any id $ map (anyBranch nss) mss
+  where
+
+  anyBranch :: [[Node]] -> [Node] -> Bool
+  anyBranch nss' ms' = any id $ map (similarBranch ms') nss'
+
+  similarBranch
+    :: [Node] -- A
+    -> [Node] -- B
+    -> Bool
+  similarBranch [] _ = True  -- True if A is empty
+  similarBranch _ [] = False -- False if B is empty
+  similarBranch ns ms = all id $ zipWith similar ns ms
+
+contextMatch
+  :: [Node] -- elements to ignore
+  -> [Node] -- left contextual pattern
+  -> [Node] -- right contextual pattern
+  -> [Node] -- left context
+  -> [Node] -- right context
+  -> a -> Maybe a -- combinator kludge (I really should go to Bool)
+contextMatch ss lpat rpat lc rc x =
+  return x
+    >>= contextMatch' ss lc lpat
+    >>= contextMatch' ss rc rpat
+  where
+
+  contextMatch'
+    :: [Node] -- elements to ignore
+    -> [Node] -- context (whether it is left or right doesn't matter)
+    -> [Node] -- context to match
+    -> a -> Maybe a -- combinator boilerplate (why not just use a Bool?)
+  contextMatch' _  _      []     x = Just x
+  contextMatch' _  []     _      _ = Nothing
+  contextMatch' ss (c:cs) (m:ms) x
+    | any id $ map (similar m) ss = contextMatch' cs ss (m:ms) x 
+    | similar m c = contextMatch' cs ss ms x 
+    | otherwise = Nothing
+
+ignoreContext :: LeftContext -> RightContext -> a -> Maybe a
+ignoreContext _ _ x = Just x
 
 --------------------------
 -- local utility functions

@@ -92,7 +92,7 @@ render' = renderSystem (mkStdGen 42) (400,400)
 -- F -> F[+F]F[-F]F
 
 b1 = System {
-      systemBasis = [NodeRotate [] (90) 0 0, NodeDraw [] 1] -- F
+      systemBasis = [NodeDraw [] 1] -- F
     , systemRules = [               -- F[+F]F[-F]F
         DeterministicRule {
             ruleContext = ignoreContext
@@ -145,7 +145,7 @@ Putting together the previous two examples, we can make more plant-like construc
 -- F -> FF
 
 dummy = System {
-      systemBasis = [NodeRotate [] 90 0 0, x]
+      systemBasis = [x]
     , systemRules = [
         DeterministicRule {
             ruleContext = ignoreContext
@@ -176,14 +176,83 @@ dummy = System {
 
 ![dummy](images/dummy.png)
 
+### Contextual L-systems
+
+Currently something is broken and this produces no output. But it is late ...
+I'll fix it later.
+
+``` haskell
+-- n=26 d=25.75
+-- ignore  +-F
+-- F1F1F1
+--
+-- 0 0 0 -> 0
+-- 0 0 1 -> 1[+F1F1]
+-- 0 1 0 -> 0
+-- 0 1 1 -> 1
+-- 1 0 0 -> 0
+-- 1 0 1 -> 1F1
+-- 1 1 0 -> 0
+-- 1 1 1 -> 0
+-- * - * -> +
+-- * + * -> -
+
+contextual = System {
+      systemBasis = [f,b,f,b,f,b]
+    , systemRules = [
+          DeterministicRule c000          unconditional isA [a]
+        , DeterministicRule c001          unconditional isA [a, NodeBranch [[ p,f,a,f,a ]]]
+        , DeterministicRule c010          unconditional isA [a]
+        , DeterministicRule c011          unconditional isA [b]
+
+        , DeterministicRule c100          unconditional isA [a]
+        , DeterministicRule c101          unconditional isA [a,f,a]
+        , DeterministicRule c110          unconditional isA [a]
+        , DeterministicRule c111          unconditional isA [a]
+
+        , DeterministicRule ignoreContext unconditional isP [m]
+        , DeterministicRule ignoreContext unconditional isM [p]
+      ]
+    , systemSteps = 26
+  } where
+
+  f = NodeDraw [] 1
+  a = NodeDummy "0"
+  b = NodeDummy "1"
+  p = NodeRotate [] 25.75    0 0
+  m = NodeRotate [] (-25.75) 0 0
+
+  ss = [p,m,f]
+
+  isA = matchDummy "0"
+  isB = matchDummy "1"
+
+  isP :: Node -> a -> Maybe a
+  isP n x | n == p = Just x
+          | otherwise = Nothing
+
+  isM :: Node -> a -> Maybe a
+  isM n x | n == m = Just x
+          | otherwise = Nothing
+  
+  c000 = contextMatch ss [a] [a]
+  c001 = contextMatch ss [a] [b]
+  c010 = contextMatch ss [a] [a]
+  c011 = contextMatch ss [a] [b]
+  c100 = contextMatch ss [b] [a] 
+  c101 = contextMatch ss [b] [b] 
+  c110 = contextMatch ss [b] [a] 
+  c111 = contextMatch ss [b] [b] 
+```
+
 ## TODO
 
  - [x] deterministic
  - [x] stochastic
  - [x] branching
  - [x] dummy variables
- - [ ] parametric
  - [ ] context sensitive
+ - [ ] parametric
  - [x] stochastic sugar
  - [x] deterministic sugar
  - [ ] branching sugar
