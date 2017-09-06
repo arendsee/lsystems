@@ -8,6 +8,7 @@ module Lsystem.Sugar
   , transSolSys
   , matchF
   , matchDummy
+  , contextMatch
 ) where
 
 import Data.Maybe
