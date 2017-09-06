@@ -6,6 +6,8 @@ module Lsystem.Sugar
   , maybeTransDol
   , transDolSys
   , transSolSys
+  , matchF
+  , matchDummy
 ) where
 
 import Data.Maybe
@@ -47,20 +49,24 @@ ignoreContext _ _ x = Just x
 unconditional :: LeftContext -> RightContext -> Node -> a -> Maybe a
 unconditional _ _ _ x = Just x
 
+matchF :: Node -> a -> Maybe a
+matchF (NodeDraw _ _) x = Just x
+matchF _ _ = Nothing
+
+matchDummy :: String -> Node -> a -> Maybe a
+matchDummy s1 (NodeDummy s2) x | s1 == s2  = Just x
+                               | otherwise = Nothing
+matchDummy _ _ _ = Nothing
 
 --------------------------
 -- local utility functions
 --------------------------
-
-isF :: Node -> a -> Maybe a
-isF (NodeDraw _ _) x = Just x
-isF _ _ = Nothing
 
 fromF :: [Node] -> Rule
 fromF repl =
   DeterministicRule {
       ruleContext     = ignoreContext
     , ruleCondition   = unconditional
-    , ruleMatch       = isF
+    , ruleMatch       = matchF
     , ruleReplacement = repl
   }
