@@ -1,24 +1,41 @@
 ## L-systems
 
-My goal is to implement all features of the L-system described in 'Algorithmic
-Beauty of Plants' (ABOP). The input will be from files using the grammar
-described in ABOP. The result will be either an SVG (for 2D models) or
-something else for 3D (I haven't settled on a format yet, but should be
-something that can be read by Blender).
+`Lsystem` is inspired by the book 'Algorithmic Beauty of Plants' (ABOP) by
+Prusinkiewcz and Lindenmayer. Most of the systems described in the book can be
+implemented with this package (and the missing features are coming soon).
+`Lsystem` is quite general, supporting context-dependent, parameterized,
+stochastic L-systems. I will write specific documentation when the feature set
+is stable.
 
 ## Examples
 
 ### DOL-systems
 
-The data structures I used to represent the L-systems are very general. They
-allow stochastic, context-sensitive, parametric L-systems (the algorithms and
-graphics for these higher forms aren't implemented yet). But expressing systems
-in this general format is extremely verbose, so I wrote the special handler
-`transDolSys`.
+Specifying systems in `Lsystem` is currently a bit verbose (see the examples in
+the following sections), but there are special handlers for the simplest
+systems. Eventually I will write a full parser for the specification language
+used in ABOP.
 
-As I implement the higher features, I will probably add similar convenience
-functions. Ultimately, I would like to have a full parser for the L-system
-grammar used in ABOP.
+The systems below are 2D, deterministic, context-free, and non-branching. They
+can be expressed with the following 3 characters:
+
+ 1. 'F' - draw a line forward
+ 2. '-' - turn left
+ 3. '+' - turn right
+
+With each iteration of the system, each 'F' is replaced by a new string. In
+ABOP syntax, the first example below can be specified as
+
+```
+n=3 d=90
+F-F-F-F
+
+F -> F-F+F-F+F
+```
+
+where `n` is the number of steps to take, `d` is the degree of the turns,
+`F-F-F-F` is the original string, and `F -> F-F+F-F+F` is a rule for replacing
+`F` at each step. These systems can be used to generate simple fractal images.
 
 ``` haskell
 import Lsystem
@@ -74,7 +91,6 @@ main = do
 ```
 
 ![s1](images/s1.png)
-
 
 ### Branching
 
