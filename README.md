@@ -114,7 +114,7 @@ b1 = System {
             ruleContext = ignoreContext
           , ruleCondition = unconditional
           , ruleMatch = matchF
-          , ruleReplacement = [
+          , ruleReplacement = constantReplacement [
                 NodeDraw [] 1 ------------------ F
               , NodeBranch [[ ------------------ [+F]
                     NodeRotate [] (-25.7) 0 0
@@ -167,7 +167,7 @@ dummy = System {
             ruleContext = ignoreContext
           , ruleCondition = unconditional
           , ruleMatch = matchDummy "X"
-          , ruleReplacement = [
+          , ruleReplacement = constantReplacement [
                 f, m                                   -- F-
               , NodeBranch [[NodeBranch [[x]], p, x]]  -- [[X]+X]
               , p, f                                   -- +F
@@ -179,7 +179,7 @@ dummy = System {
             ruleContext = ignoreContext
           , ruleCondition = unconditional
           , ruleMatch = matchF
-          , ruleReplacement = [f,f]
+          , ruleReplacement = constantReplacement [f,f]
         }
       ]
     , systemSteps = 5

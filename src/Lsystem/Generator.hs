@@ -39,10 +39,10 @@ applyRules g lc rc rs n = fromMaybe [n] . firstSuccess (applyRule p) $ rs
 
     applyRule :: Chance -> Rule -> Maybe [Node]
     applyRule _ (DeterministicRule cont cond match repl) =
-      return repl        -- replace node if:
-        >>= match n      -- * the node is of the correct form
-        >>= cont lc rc   -- * it is in the required context
-        >>= cond lc rc n -- * all parametric restrictions are met
+      return (repl lc rc n) -- replace node if:
+        >>= match n         -- * the node is of the correct form
+        >>= cont lc rc      -- * it is in the required context
+        >>= cond lc rc n    -- * all parametric restrictions are met
     applyRule p (StochasticRule rs') = case (choose p rs') of
       -- p is rescaled by dividing by the selected rule's probability
       Just (cp', r) -> applyRule (p / cp') r

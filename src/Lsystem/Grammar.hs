@@ -44,6 +44,6 @@ data GeneralRule a
         ruleContext     :: [a] -> [a] ->      ([a] -> Maybe [a])
       , ruleCondition   :: [a] -> [a] -> a -> ([a] -> Maybe [a])
       , ruleMatch       ::               a -> ([a] -> Maybe [a])
-      , ruleReplacement :: [a]
+      , ruleReplacement :: [a] -> [a] -> a -> [a]
     }
   | StochasticRule [(Chance, Rule)]

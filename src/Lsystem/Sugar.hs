@@ -10,6 +10,7 @@ module Lsystem.Sugar
   , matchDummy
   , contextMatch
   , similar
+  , constantReplacement
 ) where
 
 import Data.Maybe
@@ -113,6 +114,9 @@ contextMatch ss lpat rpat lc rc x =
 ignoreContext :: LeftContext -> RightContext -> a -> Maybe a
 ignoreContext _ _ x = Just x
 
+constantReplacement :: [Node] -> [Node] -> [Node] -> Node -> [Node]
+constantReplacement ns _ _ _ = ns
+
 --------------------------
 -- local utility functions
 --------------------------
@@ -123,5 +127,5 @@ fromF repl =
       ruleContext     = ignoreContext
     , ruleCondition   = unconditional
     , ruleMatch       = matchF
-    , ruleReplacement = repl
+    , ruleReplacement = constantReplacement repl
   }
