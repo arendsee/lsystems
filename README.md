@@ -263,6 +263,71 @@ contextual = System {
 ![con3](images/con-3.png)
 
 
+### Parametric Systems
+
+The replacement string is a function of the original symbol and the context. Each symbol holds a vector of doubles, which can be used pass extra information.
+
+``` haskell
+parametric = System {
+      systemBasis = basis
+    , systemRules = [
+          DeterministicRule {
+                ruleContext     = ignoreContext
+              , ruleCondition   = r1_cond
+              , ruleMatch       = isF
+              , ruleReplacement = r1_repl
+            }
+        , DeterministicRule {
+                ruleContext     = ignoreContext
+              , ruleCondition   = r2_cond
+              , ruleMatch       = isF
+              , ruleReplacement = r2_repl
+            }
+      ]
+    , systemSteps = 8
+  } where
+
+  c = 1.0
+  p = 0.3  
+  q = c - p
+  h = sqrt (p * q)
+
+  p' = NodeRotate []   86  0 0
+  m' = NodeRotate [] (-86) 0 0
+
+  -- f(0,1)
+  basis = [NodeDraw [0] 1]
+
+  -- t = 1
+  r1_cond _ _ (NodeDraw [t] _) x
+    | t == 0 = Just x
+    | otherwise = Nothing
+  r1_cond _ _ _ _ = Nothing
+
+  -- F(x*p, 2) + F(x*h, 1) - - F(x*h, 1) + F(x*q, 0)
+  r1_repl _ _ (NodeDraw [t] x) = [
+         NodeDraw [2] (x*p) -- F(x*p, 2)
+       , p'                 -- +
+       , NodeDraw [1] (x*h) -- F(x*h, 1)
+       , m'                 -- -
+       , m'                 -- -
+       , NodeDraw [1] (x*h) -- F(x*h, 1)
+       , p'                 -- +
+       , NodeDraw [0] (x*q) -- F(x*q, 0)
+    ]
+
+  -- t > 0
+  r2_cond _ _ (NodeDraw [t] _) x
+    | t > 0 = Just x
+    | otherwise = Nothing
+  r2_cond _ _ _ _ = Nothing
+
+  -- F(x, t-1)
+  r2_repl _ _ (NodeDraw [t] x) = [ NodeDraw [t-1] x ]
+```
+
+![parametric](images/parametric.png)
+
 ## TODO
 
  - [x] deterministic
@@ -270,7 +335,7 @@ contextual = System {
  - [x] branching
  - [x] dummy variables
  - [x] context sensitive
- - [ ] parametric
+ - [x] parametric
  - [x] stochastic sugar
  - [x] deterministic sugar
  - [ ] branching sugar
