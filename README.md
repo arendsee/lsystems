@@ -265,7 +265,22 @@ contextual = System {
 
 ### Parametric Systems
 
-The replacement string is a function of the original symbol and the context. Each symbol holds a vector of doubles, which can be used pass extra information.
+The replacement string is a function of the original symbol and the context.
+Each symbol holds a vector of doubles, which can be used pass extra
+information. This example comes from ABOP pp. 47.
+
+```
+#define c  1.0
+#define p  0.3  
+#define q  c - p
+#define h  sqrt (p * q)
+
+w : f(0,1)
+
+p1 : F(x,t) : t = 0 : F(x*p, 2) + F(x*h, 1) -- F(x*h, 1) + F(x*q, 0)
+p2 : F(x,t) : t > 0 : F(x, t-1)
+```
+
 
 ``` haskell
 parametric = System {
