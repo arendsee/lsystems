@@ -269,6 +269,41 @@ The replacement string is a function of the original symbol and the context.
 Each symbol holds a vector of doubles, which can be used pass extra
 information. This example comes from ABOP pp. 47.
 
+``` haskell
+par1 = System {
+      systemBasis = basis
+    , systemRules = [
+        DeterministicRule {
+              ruleContext     = ignoreContext
+            , ruleCondition   = unconditional
+            , ruleMatch       = matchDummy "A"
+            , ruleReplacement = r_repl
+          }
+      ]
+    , systemSteps = 10
+  } where
+
+  r = 1.456
+
+  p = NodeRotate []   85  0 0
+  m = NodeRotate [] (-85) 0 0
+
+  -- A(1)
+  basis = [NodeDummy [1] "A"]
+
+  -- F(s)[+A(s/R)][-A(s/R)]
+  r_repl _ _ (NodeDummy [s] _) = [
+         NodeDraw [] s                          -- F(s)
+      ,  NodeBranch [
+             [p, NodeDummy [s/r] "A"]  -- [+A(s/R)]
+           , [m, NodeDummy [s/r] "A"]  -- [-A(s/R)]
+         ] 
+    ]
+```
+
+![par1](images/par1.png)
+
+
 ```
 #define c  1.0
 #define p  0.3  
@@ -283,7 +318,7 @@ p2 : F(x,t) : t > 0 : F(x, t-1)
 
 
 ``` haskell
-parametric = System {
+par2 = System {
       systemBasis = basis
     , systemRules = [
           DeterministicRule {
@@ -341,7 +376,7 @@ parametric = System {
   r2_repl _ _ (NodeDraw [t] x) = [ NodeDraw [t-1] x ]
 ```
 
-![parametric](images/parametric.png)
+![par2](images/par2.png)
 
 ## TODO
 
