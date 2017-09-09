@@ -60,7 +60,7 @@ eat t (NodeDraw _ x) = t {
     , pacmanVectors = v' : (pacmanVectors t)
   } where
     v' = e (pacmanAngle t) # scale x
-eat t (NodeDummy _) = t
+eat t (NodeDummy _ _) = t
 eat t (NodeBranch nss) =
   t { pacmanSpawn = pacmanSpawn t ++ map spawn nss } where 
     spawn :: [Node] -> Pacman

@@ -166,7 +166,7 @@ dummy = System {
         DeterministicRule {
             ruleContext = ignoreContext
           , ruleCondition = unconditional
-          , ruleMatch = matchDummy "X"
+          , ruleMatch = matchDummy [] "X"
           , ruleReplacement = constantReplacement [
                 f, m                                   -- F-
               , NodeBranch [[NodeBranch [[x]], p, x]]  -- [[X]+X]
@@ -187,7 +187,7 @@ dummy = System {
   p = NodeRotate [] 22.5    0 0
   m = NodeRotate [] (-22.5) 0 0
   f = NodeDraw [] 1
-  x = NodeDummy "X"
+  x = NodeDummy [] "X"
 ```
 
 ![dummy](images/dummy.png)
@@ -228,15 +228,15 @@ contextual = System {
   } where
 
   f = NodeDraw [] 1
-  a = NodeDummy "0"
-  b = NodeDummy "1"
+  a = NodeDummy [] "0"
+  b = NodeDummy [] "1"
   p = NodeRotate []   25.75  0 0
   m = NodeRotate [] (-25.75) 0 0
 
   ss = [p,m,f]
 
-  isA = matchDummy "0"
-  isB = matchDummy "1"
+  isA = matchDummy [] "0"
+  isB = matchDummy [] "1"
 
   isP :: Node -> a -> Maybe a
   isP (NodeRotate _ a _ _) x | a > 0 = Just x
