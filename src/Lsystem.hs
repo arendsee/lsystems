@@ -1,3 +1,7 @@
+-- Lsystem.hs
+
+-- | A module for building L-systems
+
 module Lsystem
 (
     module Lsystem.Generator
