@@ -378,6 +378,26 @@ par2 = System {
 
 ![par2](images/par2.png)
 
+## Modeling trees
+
+Modeling realistic trees requires two new features: variation in line width and
+3-dimensional systems. This example is taken from ABOP pp. 60.
+
+```
+#define d1 94.74     /* divergence angle 1  */
+#define d2 132.62    /* divergence angle 2  */
+#define a  18.95     /* branching angle     */
+#define lr 1.109     /* elongation rate     */
+#define vr 1.732     /* width increase rate */
+
+w = !(1)F(200)/(45)A
+A    : * -> !(vr )F(50)[&(a)F(50)A]/(d1)
+            [&(a)F(50)A]/(d2)[&(a)F(50)A]
+F(l) : * -> F(l*lr )
+!(w) : * -> !(w*vr )
+```
+
+
 ## TODO
 
  - [x] deterministic
