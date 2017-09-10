@@ -30,6 +30,7 @@ data Pacman = Pacman {
     pacmanStart :: P2 Double
   , pacmanEnd :: P2 Double
   , pacmanAngle :: Angle Double
+  , pacmanWidth :: Double
   , pacmanSpawn :: [Pacman]
   , pacmanVectors :: [V2 Double]
 }
@@ -39,6 +40,7 @@ pacman0 = Pacman {
       pacmanStart   = p2 (0,0) :: P2 Double
     , pacmanEnd     = p2 (0,0) :: P2 Double
     , pacmanAngle   = 90 @@ deg :: Angle Double
+    , pacmanWidth   = 1.0
     , pacmanSpawn   = []
     , pacmanVectors = []
   }
@@ -48,6 +50,7 @@ spawnPacman p = Pacman {
       pacmanStart   = pacmanEnd p
     , pacmanEnd     = pacmanEnd p
     , pacmanAngle   = pacmanAngle p
+    , pacmanWidth   = pacmanWidth p
     , pacmanSpawn   = []
     , pacmanVectors = []
   }
@@ -61,6 +64,7 @@ eat t (NodeDraw _ x) = t {
   } where
     v' = e (pacmanAngle t) # scale x
 eat t (NodeDummy _ _) = t
+eat t (NodeWidth _ x) = t { pacmanWidth = x }
 eat t (NodeBranch nss) =
   t { pacmanSpawn = pacmanSpawn t ++ map spawn nss } where 
     spawn :: [Node] -> Pacman
