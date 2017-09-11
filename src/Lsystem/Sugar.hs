@@ -8,6 +8,7 @@ module Lsystem.Sugar
   , transSolSys
   , matchF
   , matchDummy
+  , matchWidth
   , contextMatch
   , similar
   , constantReplacement
@@ -59,6 +60,10 @@ matchDummy _ _ _ = Nothing
 matchRotation :: Node -> a -> Maybe a
 matchRotation (NodeRotate _ _ _ _) x = Just x
 matchRotation _ _ = Nothing
+
+matchWidth :: Node -> a -> Maybe a
+matchWidth (NodeWidth _ _) x = Just x
+matchWidth _ _ = Nothing 
 
 unconditional :: LeftContext -> RightContext -> Node -> a -> Maybe a
 unconditional _ _ _ x = Just x
