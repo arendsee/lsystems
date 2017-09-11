@@ -58,7 +58,7 @@ spawnPacman p = Pacman {
 eat :: Pacman -> Node -> Pacman 
 eat t (NodeRotate _ r _ _) = t { pacmanAngle = pacmanAngle t <> (r @@ deg) }
 eat t (NodeDraw _ x) = t {
-      pacmanEnd = pacmanEnd t # translate v'
+      pacmanEnd = pacmanEnd t # translate v' # sized (mkWidth $ pacmanWidth t)
       -- build backwards for performance reasons, this will need to be reversed later
     , pacmanVectors = v' : (pacmanVectors t)
   } where
