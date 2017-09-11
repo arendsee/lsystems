@@ -2,8 +2,15 @@
 -- documentation, see http://haskell.org/cabal/users-guide/
 
 name:                lsystem
-version:             0.6.0
-synopsis:            A toy L-system implementation
+version:             0.6.1
+synopsis:            An L-system implementation
+description:
+
+    This package is designed to support all the L-systems used in the
+    'Algorithmic Beauty of Plants' by Prusinkiewcz and Lindenmayer. Stochastic,
+    context-sensitive, branching, parametric L-systems are supported. For more
+    information see the github README.
+
 homepage:            https://github.com/arendsee/lsystem
 license:             MIT
 license-file:        LICENSE

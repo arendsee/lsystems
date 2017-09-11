@@ -166,7 +166,7 @@ dummy = System {
         DeterministicRule {
             ruleContext = ignoreContext
           , ruleCondition = unconditional
-          , ruleMatch = matchDummy "X"
+          , ruleMatch = matchDummy [] "X"
           , ruleReplacement = constantReplacement [
                 f, m                                   -- F-
               , NodeBranch [[NodeBranch [[x]], p, x]]  -- [[X]+X]
@@ -187,7 +187,7 @@ dummy = System {
   p = NodeRotate [] 22.5    0 0
   m = NodeRotate [] (-22.5) 0 0
   f = NodeDraw [] 1
-  x = NodeDummy "X"
+  x = NodeDummy [] "X"
 ```
 
 ![dummy](images/dummy.png)
@@ -228,15 +228,15 @@ contextual = System {
   } where
 
   f = NodeDraw [] 1
-  a = NodeDummy "0"
-  b = NodeDummy "1"
+  a = NodeDummy [] "0"
+  b = NodeDummy [] "1"
   p = NodeRotate []   25.75  0 0
   m = NodeRotate [] (-25.75) 0 0
 
   ss = [p,m,f]
 
-  isA = matchDummy "0"
-  isB = matchDummy "1"
+  isA = matchDummy [] "0"
+  isB = matchDummy [] "1"
 
   isP :: Node -> a -> Maybe a
   isP (NodeRotate _ a _ _) x | a > 0 = Just x
@@ -269,6 +269,41 @@ The replacement string is a function of the original symbol and the context.
 Each symbol holds a vector of doubles, which can be used pass extra
 information. This example comes from ABOP pp. 47.
 
+``` haskell
+par1 = System {
+      systemBasis = basis
+    , systemRules = [
+        DeterministicRule {
+              ruleContext     = ignoreContext
+            , ruleCondition   = unconditional
+            , ruleMatch       = matchDummy "A"
+            , ruleReplacement = r_repl
+          }
+      ]
+    , systemSteps = 10
+  } where
+
+  r = 1.456
+
+  p = NodeRotate []   85  0 0
+  m = NodeRotate [] (-85) 0 0
+
+  -- A(1)
+  basis = [NodeDummy [1] "A"]
+
+  -- F(s)[+A(s/R)][-A(s/R)]
+  r_repl _ _ (NodeDummy [s] _) = [
+         NodeDraw [] s                          -- F(s)
+      ,  NodeBranch [
+             [p, NodeDummy [s/r] "A"]  -- [+A(s/R)]
+           , [m, NodeDummy [s/r] "A"]  -- [-A(s/R)]
+         ] 
+    ]
+```
+
+![par1](images/par1.png)
+
+
 ```
 #define c  1.0
 #define p  0.3  
@@ -283,7 +318,7 @@ p2 : F(x,t) : t > 0 : F(x, t-1)
 
 
 ``` haskell
-parametric = System {
+par2 = System {
       systemBasis = basis
     , systemRules = [
           DeterministicRule {
@@ -341,7 +376,27 @@ parametric = System {
   r2_repl _ _ (NodeDraw [t] x) = [ NodeDraw [t-1] x ]
 ```
 
-![parametric](images/parametric.png)
+![par2](images/par2.png)
+
+## Modeling trees
+
+Modeling realistic trees requires two new features: variation in line width and
+3-dimensional systems. This example is taken from ABOP pp. 60.
+
+```
+#define d1 94.74     /* divergence angle 1  */
+#define d2 132.62    /* divergence angle 2  */
+#define a  18.95     /* branching angle     */
+#define lr 1.109     /* elongation rate     */
+#define vr 1.732     /* width increase rate */
+
+w = !(1)F(200)/(45)A
+A    : * -> !(vr )F(50)[&(a)F(50)A]/(d1)
+            [&(a)F(50)A]/(d2)[&(a)F(50)A]
+F(l) : * -> F(l*lr )
+!(w) : * -> !(w*vr )
+```
+
 
 ## TODO
 

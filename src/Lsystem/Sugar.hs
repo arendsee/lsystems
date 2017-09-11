@@ -51,7 +51,7 @@ matchF (NodeDraw _ _) x = Just x
 matchF _ _ = Nothing
 
 matchDummy :: String -> Node -> a -> Maybe a
-matchDummy s1 (NodeDummy s2) x
+matchDummy s1 (NodeDummy _ s2) x
   | s1 == s2  = Just x
   | otherwise = Nothing
 matchDummy _ _ _ = Nothing
@@ -68,7 +68,7 @@ similar
   :: Node -- A
   -> Node -- B
   -> Bool -- True is A is in B (where `in` is weirdly defined ...)
-similar (NodeDummy s) (NodeDummy t) = s == t
+similar (NodeDummy _ s) (NodeDummy _ t) = s == t
 similar (NodeDraw _ _ ) (NodeDraw _ _) = True
 similar (NodeRotate _ _ _ _) (NodeRotate _ _ _ _) = True
 similar (NodeBranch mss) (NodeBranch nss) = any id $ map (anyBranch nss) mss

@@ -35,7 +35,8 @@ data Node
   = NodeDraw [Double] Double 
   | NodeRotate [Double] Yaw Pitch Roll
   | NodeBranch [[Node]]
-  | NodeDummy String
+  | NodeDummy [Double] String
+  | NodeWidth [Double] Double
   deriving(Eq, Ord, Show)
 
 type Rule = GeneralRule Node
