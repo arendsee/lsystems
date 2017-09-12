@@ -27,9 +27,9 @@ renderSystem g (x,y) filename sys =
 
 -- This is an internal datastructure for passing state across the fold
 data Pacman = Pacman {
-    pacmanStart :: P2 Double
-  , pacmanEnd :: P2 Double
-  , pacmanAngle :: Angle Double
+    pacmanStart :: P3 Double
+  , pacmanEnd :: P3 Double
+  , pacmanAngle :: (Double, Double, Double)
   , pacmanWidth :: Double
   , pacmanSpawn :: [Pacman]
   , pacmanVectors :: [V2 Double]
@@ -37,9 +37,9 @@ data Pacman = Pacman {
 
 pacman0 :: Pacman
 pacman0 = Pacman {
-      pacmanStart   = p2 (0,0) :: P2 Double
-    , pacmanEnd     = p2 (0,0) :: P2 Double
-    , pacmanAngle   = 90 @@ deg :: Angle Double
+      pacmanStart   = p3 (0,0,0) :: P3 Double
+    , pacmanEnd     = p3 (0,0,0) :: P3 Double
+    , pacmanAngle   = (90,0,0)
     , pacmanWidth   = 1.0
     , pacmanSpawn   = []
     , pacmanVectors = []
@@ -56,13 +56,16 @@ spawnPacman p = Pacman {
   }
 
 eat :: Pacman -> Node -> Pacman 
-eat t (NodeRotate _ r _ _) = t { pacmanAngle = pacmanAngle t <> (r @@ deg) }
+eat t (NodeRotate _ x1 y1 z1) = case (t pacmanAngle) of
+  (x2,y2,z2) -> t { pacmanAngle = (x1+x2, y1+y2, z1+z2) }
 eat t (NodeDraw _ x) = t {
       pacmanEnd = pacmanEnd t # translate v' # sized (mkWidth $ pacmanWidth t)
       -- build backwards for performance reasons, this will need to be reversed later
     , pacmanVectors = v' : (pacmanVectors t)
   } where
+    -- TODO: this needs to be projected on the XY plain
     v' = e (pacmanAngle t) # scale x
+
 eat t (NodeDummy _ _) = t
 eat t (NodeWidth _ x) = t { pacmanWidth = x }
 eat t (NodeBranch nss) =
