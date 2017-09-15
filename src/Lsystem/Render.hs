@@ -11,7 +11,7 @@ import Lsystem.Generator
 import Lsystem.Grammar
 
 import Diagrams.Prelude
-import Diagrams.TwoD.Vector
+import qualified Diagrams.TwoD.Vector as TwoD
 import Diagrams.Backend.SVG
 import qualified System.Random as SR
 
@@ -29,7 +29,7 @@ renderSystem g (x,y) filename sys =
 data Pacman = Pacman {
     pacmanStart :: P2 Double
   , pacmanEnd :: P2 Double
-  , pacmanAngle :: Angle Double
+  , pacmanAngle :: Double
   , pacmanWidth :: Double
   , pacmanSpawn :: [Pacman]
   , pacmanVectors :: [V2 Double]
@@ -39,7 +39,7 @@ pacman0 :: Pacman
 pacman0 = Pacman {
       pacmanStart   = p2 (0,0) :: P2 Double
     , pacmanEnd     = p2 (0,0) :: P2 Double
-    , pacmanAngle   = 90 @@ deg :: Angle Double
+    , pacmanAngle   = 90
     , pacmanWidth   = 1.0
     , pacmanSpawn   = []
     , pacmanVectors = []
@@ -56,15 +56,15 @@ spawnPacman p = Pacman {
   }
 
 eat :: Pacman -> Node -> Pacman 
-eat t (NodeRotate _ r _ _) = t { pacmanAngle = pacmanAngle t <> (r @@ deg) }
+eat t (NodeRotate _ a _ _) = t { pacmanAngle = (pacmanAngle t) + a }
 eat t (NodeDraw _ x) = t {
-      pacmanEnd = pacmanEnd t # translate v'
+      pacmanEnd = pacmanEnd t # translate v' # sized (mkWidth $ pacmanWidth t)
       -- build backwards for performance reasons, this will need to be reversed later
-    , pacmanVectors = v' : (pacmanVectors t)
+    , pacmanVectors = v' : pacmanVectors t
   } where
-    v' = e (pacmanAngle t) # scale x
+    v' = TwoD.e (pacmanAngle t @@ deg) # scale x
 eat t (NodeDummy _ _) = t
-eat t (NodeWidth _ x) = t { pacmanWidth = x }
+eat t (NodeWidth _ x) = t { pacmanWidth = x * pacmanWidth t }
 eat t (NodeBranch nss) =
   t { pacmanSpawn = pacmanSpawn t ++ map spawn nss } where 
     spawn :: [Node] -> Pacman
@@ -74,5 +74,10 @@ eat t (NodeBranch nss) =
 diagramPacman :: Pacman -> Diagram B
 diagramPacman p = mkDia p <> mergeSpawn p where
   -- reverse the vectors here, to rectify the backwards build in `eat`
-  mkDia = strokeLocTrail . (flip at) (pacmanStart p) . fromOffsets . reverse . pacmanVectors
+  mkDia
+    = strokeLocTrail
+    . (flip at) (pacmanStart p)
+    . fromOffsets
+    . reverse
+    . pacmanVectors
   mergeSpawn = mconcat . map diagramPacman . pacmanSpawn

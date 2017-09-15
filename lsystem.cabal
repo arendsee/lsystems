@@ -2,7 +2,7 @@
 -- documentation, see http://haskell.org/cabal/users-guide/
 
 name:                lsystem
-version:             0.6.1
+version:             0.6.2
 synopsis:            An L-system implementation
 description:
 
