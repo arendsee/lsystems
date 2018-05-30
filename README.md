@@ -16,8 +16,8 @@ the following sections), but there are special handlers for the simplest
 systems. Eventually I will write a full parser for the specification language
 used in ABOP.
 
-The systems below are 2D, deterministic, context-free, and non-branching. They
-can be expressed with the following 3 characters:
+DOL-systems are deterministic, context-free, non-branching, and 2D. They can be
+expressed with the following 3 characters:
 
  1. 'F' - draw a line forward
  2. '-' - turn left
@@ -72,7 +72,7 @@ main = do
 
 L-systems can be made stochastic be adding probabilistic rules. A probabilistic
 rule is a set of rules associated with probabilities, where the probabilities
-must some to a number less than or equal to 1 (with the implicit default rule
+must sum to a number less than or equal to 1 (with the implicit default rule
 of N -> N making up the difference).
 
 
@@ -83,6 +83,11 @@ import System.Random
 render' :: String -> System -> IO ()
 render' = renderSystem (mkStdGen 42) (400,400)
 
+-- Where the arguments are:
+--  1. number of steps
+--  2. angle
+--  3. initial state
+--  4. weighted list of random replacements
 s1 = transSolSys 12 45 "F" [(0.4, "FF"), (0.5, "-F"), (0.1, "FF-FF-FF-FF")]
 
 main :: IO ()
@@ -152,7 +157,6 @@ Putting together the previous two examples, we can make more plant-like construc
 
 
 ### Node rewriting and dummy variables
-
 
 ``` haskell
 -- n=5 f=22.5
