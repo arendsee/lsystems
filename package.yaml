@@ -1,0 +1,26 @@
+name:             lsystem
+version:          0.6.2
+homepage:         https://github.com/arendsee/lsystem
+synopsis:         An L-system implementation
+description:      See GitHub README <https://github.com/githubuser/lsystem#readme>
+category:         Language
+license:          MIT
+license-file:     LICENSE
+author:           "Zebulun Arendsee" 
+maintainer:       "zbwrbz@gmail.com"
+github:           "arendsee/lsystem"
+bug-reports:      https://github.com/arendsee/lsystem/issues
+copyright:        "2018 Zebulun Arendsee"
+
+extra-source-files:
+  - README.md
+
+dependencies:
+  - base >= 4.7 && < 5
+  - diagrams-lib
+  - diagrams-svg
+  - parsec
+  - random
+
+library:
+  source-dirs: src

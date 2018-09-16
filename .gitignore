@@ -1,3 +1,5 @@
+lsystem.cabal
+.stack-work/
 dist/
 *.svg
 *.hi
