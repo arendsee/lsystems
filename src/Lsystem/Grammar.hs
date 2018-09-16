@@ -1,3 +1,12 @@
+{-|
+Module      : Lsystem.Grammar
+Description : Core types
+Copyright   : (c) Zebulun Arendsee, 2018
+License     : MIT
+Maintainer  : zbwrnz@gmail.com
+Stability   : experimental
+-}
+
 module Lsystem.Grammar
 (
     System(..)
@@ -13,17 +22,17 @@ module Lsystem.Grammar
   , Chance
 ) where
 
--- context-sensitive stochastic parameterized L-systems
+-- 
 
-type Distance = Double -- x > 0
-type Yaw      = Double -- -180 < x < 180
-type Pitch    = Double -- -180 < x < 180
-type Roll     = Double -- -180 < x < 180
+type Distance = Double -- ^ x > 0
+type Yaw      = Double -- ^ -180 < x < 180
+type Pitch    = Double -- ^ -180 < x < 180
+type Roll     = Double -- ^ -180 < x < 180
 
 type LeftContext  = [Node]
 type RightContext = [Node]
 
-type Chance = Double -- 0 <= x <= 1
+type Chance = Double -- ^ 0 <= x <= 1
 
 data System = System {
       systemBasis :: [Node]

@@ -1,3 +1,12 @@
+{-|
+Module      : Lsystem.Generator
+Description : Generate the L-system
+Copyright   : (c) Zebulun Arendsee, 2018
+License     : MIT
+Maintainer  : zbwrnz@gmail.com
+Stability   : experimental
+-}
+
 module Lsystem.Generator
 (
     step
@@ -40,9 +49,9 @@ applyRules g lc rc rs n = fromMaybe [n] . firstSuccess (applyRule p) $ rs
     applyRule :: Chance -> Rule -> Maybe [Node]
     applyRule _ (DeterministicRule cont cond match repl) =
       return (repl lc rc n) -- replace node if:
-        >>= match n         -- * the node is of the correct form
-        >>= cont lc rc      -- * it is in the required context
-        >>= cond lc rc n    -- * all parametric restrictions are met
+        >>= match n         --   the node is of the correct form
+        >>= cont lc rc      --   it is in the required context
+        >>= cond lc rc n    --   all parametric restrictions are met
     applyRule p (StochasticRule rs') = case (choose p rs') of
       -- p is rescaled by dividing by the selected rule's probability
       Just (cp', r) -> applyRule (p / cp') r

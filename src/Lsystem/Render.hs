@@ -2,6 +2,15 @@
 {-# LANGUAGE FlexibleContexts          #-}
 {-# LANGUAGE TypeFamilies              #-}
 
+{-|
+Module      : Lsystem.Render
+Description : Render a generated L-system
+Copyright   : (c) Zebulun Arendsee, 2018
+License     : MIT
+Maintainer  : zbwrnz@gmail.com
+Stability   : experimental
+-}
+
 module Lsystem.Render
 (
   renderSystem

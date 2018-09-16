@@ -1,3 +1,12 @@
+{-|
+Module      : Lsystem.Sugar
+Description : Functions for simplifying L-system specification
+Copyright   : (c) Zebulun Arendsee, 2018
+License     : MIT
+Maintainer  : zbwrnz@gmail.com
+Stability   : experimental
+-}
+
 module Lsystem.Sugar
 (
     transDol
@@ -68,11 +77,11 @@ matchWidth _ _ = Nothing
 unconditional :: LeftContext -> RightContext -> Node -> a -> Maybe a
 unconditional _ _ _ x = Just x
 
--- Check is A is a similar to B. For branches, A must be a subtree of B.
+-- | Check is A is a similar to B. For branches, A must be a subtree of B.
 similar
-  :: Node -- A
-  -> Node -- B
-  -> Bool -- True is A is in B (where `in` is weirdly defined ...)
+  :: Node -- ^ A
+  -> Node -- ^ B
+  -> Bool -- ^ True if A is in B (where `in` is weirdly defined ...)
 similar (NodeDummy _ s) (NodeDummy _ t) = s == t
 similar (NodeDraw _ _ ) (NodeDraw _ _) = True
 similar (NodeRotate _ _ _ _) (NodeRotate _ _ _ _) = True
@@ -92,11 +101,11 @@ similar (NodeBranch mss) (NodeBranch nss) = any id $ map (anyBranch nss) mss
 similar _ _ = False
 
 contextMatch
-  :: [Node] -- elements to ignore
-  -> [Node] -- left contextual pattern
-  -> [Node] -- right contextual pattern
-  -> [Node] -- left context
-  -> [Node] -- right context
+  :: [Node] -- ^ elements to ignore
+  -> [Node] -- ^ left contextual pattern
+  -> [Node] -- ^ right contextual pattern
+  -> [Node] -- ^ left context
+  -> [Node] -- ^ right context
   -> a -> Maybe a -- combinator kludge (I really should go to Bool)
 contextMatch ss lpat rpat lc rc x =
   return x
