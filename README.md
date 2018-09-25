@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/101977575.svg)](https://zenodo.org/badge/latestdoi/101977575)
+
 ## L-systems
 
 `Lsystem` is inspired by the book 'Algorithmic Beauty of Plants' (ABOP) by
