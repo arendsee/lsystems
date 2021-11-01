@@ -16,6 +16,7 @@ module Lsystem.Sugar
   , transDolSys
   , transSolSys
   , matchF
+  , matchDraw
   , matchDummy
   , matchWidth
   , contextMatch
@@ -59,6 +60,13 @@ transSolSys n angle basis replacements = System {
 matchF :: Node -> a -> Maybe a
 matchF (NodeDraw _ _) x = Just x
 matchF _ _ = Nothing
+
+-- to match a node that is also being drawn
+matchDraw :: Double -> Node -> a -> Maybe a
+matchDraw s1 (NodeDraw _ s2) x -- partially applied constructor for NodeDraw used to match it appropriately
+  | s1 == s2 = Just x
+  | otherwise = Nothing
+matchDraw _ _ _ = Nothing
 
 matchDummy :: String -> Node -> a -> Maybe a
 matchDummy s1 (NodeDummy _ s2) x
