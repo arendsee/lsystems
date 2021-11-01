@@ -199,6 +199,62 @@ dummy = System {
 
 ![dummy](images/dummy.png)
 
+### Matching drawn nodes
+
+Some l-systems require that several variables be drawn. For example the Sierpiński arrowhead curve:
+
+```
+Axiom: A
+Rules:
+A=B-A-B
+B=A+B+A
+```
+where _both_ A and B need to be drawn 
+
+in such cases the the `matchDraw` can be used appropriately
+
+```haskell
+thesystem = System {
+    systemBasis = [NodeDraw [] 1] -- A is the axiom
+    , systemRules = [
+        
+        DeterministicRule {
+            ruleContext = ignoreContext
+            , ruleCondition = unconditional
+            , ruleMatch = matchDraw 1 -- match A
+            , ruleReplacement = constantReplacement [
+                b, m, a, m, b -- B-A-B
+            ]
+        },
+
+        DeterministicRule {
+            ruleContext = ignoreContext
+            , ruleCondition = unconditional
+            , ruleMatch = matchDraw 2 -- match B
+            , ruleReplacement = constantReplacement [
+                a, p, b, p, a
+            ]
+        }
+    ], systemSteps = 8
+} where
+    a = NodeDraw [] 1 -- as decided beforehand 
+    b = NodeDraw [] 2 -- B, as decided beforehand 
+    p = NodeRotate [] 60 0 0
+    m = NodeRotate [] (-60) 0 0
+
+main :: IO () 
+main = do
+    render' "sierpinki_arrowhead.svg" thesystem
+```
+
+Summary of usage: to match `nodeDraw [] 1` use `matchDraw 1` for the `ruleMatch` and so on (the number changes for different variables)
+
+in above example and lsystem A is `NodeDraw [] 1` and was matched using `matchDraw 1` and B is `NodeDraw [] 2` and was matched using `matchDraw 2`
+
+Note: ** Do Not use matchF when there are more than one NodeDraw that need to be matched separately **
+
+![md1](./images/md1.png)
+
 ### Contextual L-systems
 
 ``` haskell
